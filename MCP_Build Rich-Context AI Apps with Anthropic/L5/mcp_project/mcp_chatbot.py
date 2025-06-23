@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
-from anthropic import Anthropic
+import openai
+import os
+import json
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from typing import List
@@ -15,53 +17,74 @@ class MCP_ChatBot:
     def __init__(self):
         # Initialize session and client objects
         self.session: ClientSession = None
-        self.anthropic = Anthropic()
+        self.openai_client = openai.OpenAI(
+            api_key=os.environ.get("OPENAI_API_KEY"),
+            base_url=os.environ.get("OPENAI_API_BASE")
+        )
         self.available_tools: List[dict] = []
 
     async def process_query(self, query):
         messages = [{'role':'user', 'content':query}]
-        response = self.anthropic.messages.create(max_tokens = 2024,
-                                      model = 'claude-3-7-sonnet-20250219', 
-                                      tools = self.available_tools,
-                                      messages = messages)
+        
+        # Convert tools to OpenAI format
+        openai_tools = []
+        for tool in self.available_tools:
+            openai_tools.append({
+                "type": "function",
+                "function": {
+                    "name": tool["name"],
+                    "description": tool["description"],
+                    "parameters": tool["input_schema"]
+                }
+            })
+        
+        response = self.openai_client.chat.completions.create(
+            max_completion_tokens=2024,
+            model=os.environ.get("DEFAULT_LLM_MODEL", "o4-mini"),
+            tools=openai_tools if openai_tools else None,
+            messages=messages
+        )
+        
         process_query = True
         while process_query:
-            assistant_content = []
-            for content in response.content:
-                if content.type =='text':
-                    print(content.text)
-                    assistant_content.append(content)
-                    if(len(response.content) == 1):
-                        process_query= False
-                elif content.type == 'tool_use':
-                    assistant_content.append(content)
-                    messages.append({'role':'assistant', 'content':assistant_content})
-                    tool_id = content.id
-                    tool_args = content.input
-                    tool_name = content.name
-    
+            message = response.choices[0].message
+            
+            if message.content:
+                print(message.content)
+                
+            if message.tool_calls:
+                # Add assistant message with tool calls
+                messages.append({
+                    "role": "assistant", 
+                    "content": message.content,
+                    "tool_calls": message.tool_calls
+                })
+                
+                # Process each tool call
+                for tool_call in message.tool_calls:
+                    tool_name = tool_call.function.name
+                    tool_args = json.loads(tool_call.function.arguments)
                     print(f"Calling tool {tool_name} with args {tool_args}")
                     
-                    # Call a tool
-                    #result = execute_tool(tool_name, tool_args)
+                    # Tool invocation through the client session
                     result = await self.session.call_tool(tool_name, arguments=tool_args)
-                    messages.append({"role": "user", 
-                                      "content": [
-                                          {
-                                              "type": "tool_result",
-                                              "tool_use_id":tool_id,
-                                              "content": result.content
-                                          }
-                                      ]
-                                    })
-                    response = self.anthropic.messages.create(max_tokens = 2024,
-                                      model = 'claude-3-7-sonnet-20250219', 
-                                      tools = self.available_tools,
-                                      messages = messages) 
                     
-                    if(len(response.content) == 1 and response.content[0].type == "text"):
-                        print(response.content[0].text)
-                        process_query= False
+                    # Add tool result message
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": result.content
+                    })
+                
+                # Get next response
+                response = self.openai_client.chat.completions.create(
+                    max_completion_tokens=2024,
+                    model=os.environ.get("DEFAULT_LLM_MODEL", "o4-mini"),
+                    tools=openai_tools if openai_tools else None,
+                    messages=messages
+                )
+            else:
+                process_query = False
 
     
     

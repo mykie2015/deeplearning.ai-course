@@ -1,7 +1,11 @@
+# Use Tsinghua University pip mirror for faster downloads in China
+--index-url https://pypi.tuna.tsinghua.edu.cn/simple/
+--trusted-host pypi.tuna.tsinghua.edu.cn
+
 anthropic>=0.51.0
 arxiv>=2.2.0
+openai>=1.0.0
 mcp>=1.7.1
 pypdf2>=3.0.1
 python-dotenv>=1.1.0
-typing>=3.10.0.0
 uv

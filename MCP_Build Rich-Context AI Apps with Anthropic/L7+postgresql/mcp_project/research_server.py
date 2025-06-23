@@ -3,6 +3,7 @@ import json
 import os
 from typing import List
 from mcp.server.fastmcp import FastMCP
+import psycopg2
 
 PAPER_DIR = "papers"
 
@@ -95,6 +96,36 @@ def extract_info(paper_id: str) -> str:
                     continue
     
     return f"There's no saved information related to paper {paper_id}."
+
+@mcp.tool()
+def list_tables() -> str:
+    """
+    Connects to a PostgreSQL database and lists all tables in the public schema.
+    
+    Returns:
+        A formatted string listing the table names, or an error message.
+    """
+    try:
+        conn = psycopg2.connect(
+            host=os.environ.get("PG_HOST"),
+            port=os.environ.get("PG_PORT", "5432"),
+            user=os.environ.get("PG_USER"),
+            password=os.environ.get("PG_PASSWORD"),
+            dbname=os.environ.get("PG_DATABASE")
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public';")
+        tables = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        if not tables:
+            return "No tables found in the public schema."
+            
+        table_list = "\\n".join([f"- {table[0]}" for table in tables])
+        return f"Tables in the database:\\n{table_list}"
+    except Exception as e:
+        return f"An error occurred while connecting to the database: {e}"
 
 @mcp.resource("papers://folders")
 def get_available_folders() -> str:
@@ -189,36 +220,11 @@ def generate_search_prompt(topic: str, num_papers: int = 5) -> str:
 
 Follow these instructions:
 1. First, call the `search_papers` tool with `topic='{topic}'` and `max_results={num_papers}`.
-2. The `search_papers` tool will return a list of paper IDs. For each paper ID in the list, you MUST call the `extract_info` tool to get the details of that paper.
-3. After you have gathered the information for all the papers, provide a comprehensive summary that synthesizes the information. Your summary should include:
-   - An overview of the current state of research in '{topic}'.
-   - Common themes and trends across the papers.
-   - Key research gaps or areas for future investigation.
-4. Finally, present the detailed information for each paper individually. Organize your findings in a clear, structured format with headings and bullet points. For each paper, include:
-   - Paper title
-   - Authors
-   - Publication date
-   - A brief summary of the key findings.
+2. The `search_papers` tool will return a list of paper IDs.
+3. Next, call the `extract_info` tool with the ID of each paper to get detailed information about it.
+4. Finally, provide a synthesis and detailed breakdown of the papers.
 
 Please execute this multi-step process. First call all necessary tools, then provide the synthesis and detailed breakdown."""
-
-@mcp.prompt()
-def research_and_save_report(topic: str, num_papers: int = 3, filename: str = "research_report.md") -> str:
-    """
-    Researches a topic, synthesizes the findings, and saves the result to a markdown file.
-    
-    Args:
-        topic: The research topic.
-        num_papers: The number of papers to include in the research.
-        filename: The name of the markdown file for the final report.
-    """
-    return f"""First, get the detailed information for {num_papers} papers on the topic '{topic}'. To do this, you must first call the `search_papers` tool, and then for each paper ID returned, you must call the `extract_info` tool.
-
-Once you have the detailed information for all papers, create a comprehensive report in markdown format. The report should have two sections:
-1.  A high-level synthesis of the research, including common themes, trends, and key findings.
-2.  A detailed breakdown of each individual paper, including its title, authors, publication date, and a summary of its contributions.
-
-Finally, take the complete markdown report and save it to a file by calling the `save_to_markdown` tool with the specified `filename` ('{filename}') and the markdown content you generated."""
 
 if __name__ == "__main__":
     # Initialize and run the server
