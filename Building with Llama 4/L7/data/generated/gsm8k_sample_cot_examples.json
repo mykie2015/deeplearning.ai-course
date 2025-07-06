@@ -1,0 +1,102 @@
+{
+  "summary": "Here is a 3-sentence summary of the document:\n\nThe document contains 50 math problems covering a wide range of topics, including basic arithmetic operations, algebra, and real-world applications. The problems vary in complexity and involve different mathematical concepts, such as ratios, percentages, and proportions. The document appears to be a collection of practice problems or a test bank, designed to assess mathematical skills and problem-solving abilities.",
+  "cot_examples": [
+    {
+      "question": "If James writes a 3-page letter to 2 different friends twice a week, how many pages does he write in 52 weeks?",
+      "reasoning": "Step 1: First, I need to determine how many pages James writes in one week.\nStep 2: James writes 3 pages to 2 friends twice a week, so he writes 3 * 2 * 2 = 12 pages per week.\nStep 3: To find out how many pages he writes in a year, I need to multiply the number of pages he writes per week by the number of weeks in a year (52).\nStep 4: So, the total number of pages James writes in a year is 12 * 52.",
+      "answer": "624"
+    },
+    {
+      "question": "If Mark has 10 yellow flowers and there are 80% more purple flowers than yellow flowers, and there are 25% as many green flowers as yellow and purple flowers combined, how many flowers does Mark have?",
+      "reasoning": "Step 1: First, I need to calculate the number of purple flowers.\nStep 2: Since there are 80% more purple flowers than yellow flowers, the number of purple flowers is 10 + (10 * 0.8) = 10 + 8 = 18.\nStep 3: Next, I need to find the total number of yellow and purple flowers combined, which is 10 + 18 = 28.\nStep 4: Then, I need to calculate the number of green flowers, which is 25% of 28, or 0.25 * 28 = 7.\nStep 5: Finally, I add the number of yellow, purple, and green flowers to get the total number of flowers Mark has: 10 + 18 + 7.",
+      "answer": "35"
+    },
+    {
+      "question": "If Tobias has been saving $5 allowance each month for 3 months and charges $15 to mow a lawn and $7 to shovel a driveway, and he mows 4 lawns, how many driveways did he shovel if he has $95 to buy shoes and has $15 left after the purchase?",
+      "reasoning": "Step 1: First, I need to determine how much money Tobias saved from his allowance: 3 * $5 = $15.\nStep 2: Then, I need to calculate how much he earned from mowing lawns: 4 * $15 = $60.\nStep 3: Tobias spent $95 on shoes and had $15 left, so he had $95 + $15 = $110 before buying the shoes.\nStep 4: The total amount he earned from mowing lawns and his allowance is $60 + $15 = $75.\nStep 5: To find out how much he earned from shoveling driveways, I subtract $75 from $110, which gives $35.\nStep 6: Finally, I divide $35 by $7 to find out how many driveways he shoveled.",
+      "answer": "5"
+    },
+    {
+      "question": "If a deep-sea monster consumes 847 people over 300 years and each new ship has twice as many people as the last ship, how many people were on the ship the monster ate in the first hundred years?",
+      "reasoning": "Step 1: Let's denote the number of people on the first ship as x.\nStep 2: Then, the number of people on the second ship is 2x, and on the third ship is 2 * 2x = 4x.\nStep 3: The total number of people consumed over 300 years is x + 2x + 4x = 7x.\nStep 4: We are given that 7x = 847, so we need to solve for x.\nStep 5: Dividing 847 by 7 gives x.",
+      "answer": "121"
+    },
+    {
+      "question": "If Rachel and Sara want to attend a beauty and modeling contest and Sara spent $50 + $200 on shoes and a dress, how much should Rachel budget if she wants to spend twice as much as Sara?",
+      "reasoning": "Step 1: First, I need to calculate how much Sara spent: $50 + $200 = $250.\nStep 2: Since Rachel wants to spend twice as much as Sara, I need to multiply Sara's total by 2.\nStep 3: So, Rachel's budget should be 2 * $250.",
+      "answer": "500"
+    }
+  ],
+  "conversations": [
+    [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant that provides detailed explanations."
+      },
+      {
+        "role": "user",
+        "content": "If James writes a 3-page letter to 2 different friends twice a week, how many pages does he write in 52 weeks?"
+      },
+      {
+        "role": "assistant",
+        "content": "Let me think through this step by step:\n\nStep 1: First, I need to determine how many pages James writes in one week.\nStep 2: James writes 3 pages to 2 friends twice a week, so he writes 3 * 2 * 2 = 12 pages per week.\nStep 3: To find out how many pages he writes in a year, I need to multiply the number of pages he writes per week by the number of weeks in a year (52).\nStep 4: So, the total number of pages James writes in a year is 12 * 52.\n\nSo the answer is: 624"
+      }
+    ],
+    [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant that provides detailed explanations."
+      },
+      {
+        "role": "user",
+        "content": "If Mark has 10 yellow flowers and there are 80% more purple flowers than yellow flowers, and there are 25% as many green flowers as yellow and purple flowers combined, how many flowers does Mark have?"
+      },
+      {
+        "role": "assistant",
+        "content": "Let me think through this step by step:\n\nStep 1: First, I need to calculate the number of purple flowers.\nStep 2: Since there are 80% more purple flowers than yellow flowers, the number of purple flowers is 10 + (10 * 0.8) = 10 + 8 = 18.\nStep 3: Next, I need to find the total number of yellow and purple flowers combined, which is 10 + 18 = 28.\nStep 4: Then, I need to calculate the number of green flowers, which is 25% of 28, or 0.25 * 28 = 7.\nStep 5: Finally, I add the number of yellow, purple, and green flowers to get the total number of flowers Mark has: 10 + 18 + 7.\n\nSo the answer is: 35"
+      }
+    ],
+    [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant that provides detailed explanations."
+      },
+      {
+        "role": "user",
+        "content": "If Tobias has been saving $5 allowance each month for 3 months and charges $15 to mow a lawn and $7 to shovel a driveway, and he mows 4 lawns, how many driveways did he shovel if he has $95 to buy shoes and has $15 left after the purchase?"
+      },
+      {
+        "role": "assistant",
+        "content": "Let me think through this step by step:\n\nStep 1: First, I need to determine how much money Tobias saved from his allowance: 3 * $5 = $15.\nStep 2: Then, I need to calculate how much he earned from mowing lawns: 4 * $15 = $60.\nStep 3: Tobias spent $95 on shoes and had $15 left, so he had $95 + $15 = $110 before buying the shoes.\nStep 4: The total amount he earned from mowing lawns and his allowance is $60 + $15 = $75.\nStep 5: To find out how much he earned from shoveling driveways, I subtract $75 from $110, which gives $35.\nStep 6: Finally, I divide $35 by $7 to find out how many driveways he shoveled.\n\nSo the answer is: 5"
+      }
+    ],
+    [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant that provides detailed explanations."
+      },
+      {
+        "role": "user",
+        "content": "If a deep-sea monster consumes 847 people over 300 years and each new ship has twice as many people as the last ship, how many people were on the ship the monster ate in the first hundred years?"
+      },
+      {
+        "role": "assistant",
+        "content": "Let me think through this step by step:\n\nStep 1: Let's denote the number of people on the first ship as x.\nStep 2: Then, the number of people on the second ship is 2x, and on the third ship is 2 * 2x = 4x.\nStep 3: The total number of people consumed over 300 years is x + 2x + 4x = 7x.\nStep 4: We are given that 7x = 847, so we need to solve for x.\nStep 5: Dividing 847 by 7 gives x.\n\nSo the answer is: 121"
+      }
+    ],
+    [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant that provides detailed explanations."
+      },
+      {
+        "role": "user",
+        "content": "If Rachel and Sara want to attend a beauty and modeling contest and Sara spent $50 + $200 on shoes and a dress, how much should Rachel budget if she wants to spend twice as much as Sara?"
+      },
+      {
+        "role": "assistant",
+        "content": "Let me think through this step by step:\n\nStep 1: First, I need to calculate how much Sara spent: $50 + $200 = $250.\nStep 2: Since Rachel wants to spend twice as much as Sara, I need to multiply Sara's total by 2.\nStep 3: So, Rachel's budget should be 2 * $250.\n\nSo the answer is: 500"
+      }
+    ]
+  ]
+}
