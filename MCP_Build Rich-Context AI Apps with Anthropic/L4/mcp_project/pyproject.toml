@@ -8,3 +8,7 @@ dependencies = [
     "arxiv>=2.2.0",
     "mcp>=1.9.4",
 ]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+default = true

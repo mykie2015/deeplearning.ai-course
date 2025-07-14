@@ -1,0 +1,69 @@
+2025-07-11 06:26:20,579 - research_server - INFO - FastMCP research server initialized
+2025-07-11 06:26:20,581 - research_server - INFO - Starting MCP research server with stdio transport
+2025-07-11 06:26:20,585 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-07-11 06:26:20,586 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-07-11 06:26:20,587 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-07-11 06:27:37,788 - research_server - INFO - FastMCP research server initialized
+2025-07-11 06:27:37,789 - research_server - INFO - Generated new session token
+2025-07-11 06:27:37,789 - research_server - INFO - === MCP PROXY CONFIGURATION ===
+2025-07-11 06:27:37,789 - research_server - INFO - Inspector Proxy Address: http://localhost:6277
+2025-07-11 06:27:37,789 - research_server - INFO - Session Token: ae3650b2110152a4d4831c8f71a72e80
+2025-07-11 06:27:37,789 - research_server - INFO - ================================
+2025-07-11 06:27:37,789 - research_server - INFO - Environment Variables Check:
+2025-07-11 06:27:37,789 - research_server - INFO - DLAI_LOCAL_URL: Not set
+2025-07-11 06:27:37,789 - research_server - INFO - MCP_SESSION_TOKEN: Not set
+2025-07-11 06:27:37,789 - research_server - INFO - ANTHROPIC_API_KEY: Not set
+2025-07-11 06:27:37,793 - research_server - INFO - Starting MCP research server with stdio transport
+2025-07-11 06:30:13,732 - research_server - INFO - FastMCP research server initialized
+2025-07-11 06:30:13,733 - research_server - INFO - Generated new session token
+2025-07-11 06:30:13,733 - research_server - INFO - === MCP PROXY CONFIGURATION ===
+2025-07-11 06:30:13,733 - research_server - INFO - Inspector Proxy Address: http://localhost:6277
+2025-07-11 06:30:13,733 - research_server - INFO - Session Token: e7ea65789873a4d95081652b9bc42300
+2025-07-11 06:30:13,733 - research_server - INFO - ================================
+2025-07-11 06:30:13,733 - research_server - INFO - Environment Variables Check:
+2025-07-11 06:30:13,733 - research_server - INFO - DLAI_LOCAL_URL: Not set
+2025-07-11 06:30:13,733 - research_server - INFO - MCP_SESSION_TOKEN: Not set
+2025-07-11 06:30:13,734 - research_server - INFO - ANTHROPIC_API_KEY: Not set
+2025-07-11 06:30:13,736 - research_server - INFO - Starting MCP research server with stdio transport
+2025-07-11 06:30:13,740 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-07-11 06:30:13,741 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-07-11 06:30:13,742 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-07-11 06:32:19,896 - research_server - INFO - FastMCP research server initialized
+2025-07-11 06:32:19,896 - research_server - INFO - Generated new session token
+2025-07-11 06:32:19,896 - research_server - INFO - === MCP PROXY CONFIGURATION ===
+2025-07-11 06:32:19,896 - research_server - INFO - Inspector Proxy Address: http://localhost:6277
+2025-07-11 06:32:19,896 - research_server - INFO - Session Token: c50adcef1a2005bee678ffa6646170c5
+2025-07-11 06:32:19,896 - research_server - INFO - ================================
+2025-07-11 06:32:19,896 - research_server - INFO - Environment Variables Check:
+2025-07-11 06:32:19,896 - research_server - INFO - DLAI_LOCAL_URL: Not set
+2025-07-11 06:32:19,896 - research_server - INFO - MCP_SESSION_TOKEN: Not set
+2025-07-11 06:32:19,896 - research_server - INFO - ANTHROPIC_API_KEY: Not set
+2025-07-11 06:32:19,899 - research_server - INFO - Starting MCP research server with stdio transport
+2025-07-11 06:32:22,169 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-07-11 06:32:24,284 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourceTemplatesRequest
+2025-07-11 06:32:30,793 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-07-11 06:32:37,955 - mcp.server.lowlevel.server - INFO - Processing request of type GetPromptRequest
+2025-07-11 06:32:37,956 - mcp.server.fastmcp.server - ERROR - Error getting prompt generate_search_prompt: Missing required arguments: {'topic'}
+2025-07-11 06:32:54,392 - mcp.server.lowlevel.server - INFO - Processing request of type CompleteRequest
+2025-07-11 06:33:29,670 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-07-11 06:33:34,125 - mcp.server.lowlevel.server - INFO - Processing request of type PingRequest
+2025-07-11 06:34:21,584 - mcp.server.lowlevel.server - INFO - Processing request of type GetPromptRequest
+2025-07-11 06:34:21,585 - research_server - INFO - Generating search prompt for topic: 'llm_reasoning' with 5 papers
+2025-07-11 06:35:03,873 - research_server - INFO - FastMCP research server initialized
+2025-07-11 06:35:03,873 - research_server - INFO - Generated new session token
+2025-07-11 06:35:03,873 - research_server - INFO - === MCP PROXY CONFIGURATION ===
+2025-07-11 06:35:03,873 - research_server - INFO - Inspector Proxy Address: http://localhost:6277
+2025-07-11 06:35:03,873 - research_server - INFO - Session Token: 876f8c35bc20afac1ef4d4c55d40c71a
+2025-07-11 06:35:03,873 - research_server - INFO - ================================
+2025-07-11 06:35:03,873 - research_server - INFO - Environment Variables Check:
+2025-07-11 06:35:03,873 - research_server - INFO - DLAI_LOCAL_URL: Not set
+2025-07-11 06:35:03,873 - research_server - INFO - MCP_SESSION_TOKEN: Not set
+2025-07-11 06:35:03,873 - research_server - INFO - ANTHROPIC_API_KEY: Not set
+2025-07-11 06:35:03,875 - research_server - INFO - Starting MCP research server with stdio transport
+2025-07-11 06:35:03,878 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-07-11 06:35:03,879 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-07-11 06:35:03,880 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-07-11 06:35:21,608 - mcp.server.lowlevel.server - INFO - Processing request of type ReadResourceRequest
+2025-07-11 06:35:21,608 - research_server - INFO - Getting available topic folders
+2025-07-11 06:35:21,608 - research_server - INFO - Found 4 available topic folders
+2025-07-11 06:52:21,612 - research_server - INFO - MCP research server shutting down
