@@ -1,0 +1,60 @@
+{
+    "Assembly": {
+        "construction_type": "node", 
+        "source_file": "assemblies.csv", 
+        "label": "Assembly", 
+        "unique_column_name": "assembly_id", 
+        "properties": ["assembly_name", "quantity", "product_id"]
+    }, 
+    "Part": {
+        "construction_type": "node", 
+        "source_file": "parts.csv", 
+        "label": "Part", 
+        "unique_column_name": "part_id", 
+        "properties": ["part_name", "quantity", "assembly_id"]
+    }, 
+    "Product": {
+        "construction_type": "node", 
+        "source_file": "products.csv", 
+        "label": "Product", 
+        "unique_column_name": "product_id", 
+        "properties": ["product_name", "price", "description"]
+    }, 
+    "Supplier": {
+        "construction_type": "node", 
+        "source_file": "suppliers.csv", 
+        "label": "Supplier", 
+        "unique_column_name": "supplier_id", 
+        "properties": ["name", "specialty", "city", "country", "website", "contact_email"]
+    }, 
+    "Contains": {
+        "construction_type": "relationship", 
+        "source_file": "assemblies.csv", 
+        "relationship_type": "Contains", 
+        "from_node_label": "Product", 
+        "from_node_column": "product_id", 
+        "to_node_label": "Assembly", 
+        "to_node_column": "assembly_id", 
+        "properties": ["quantity"]
+    }, 
+    "Is_Part_Of": {
+        "construction_type": "relationship", 
+        "source_file": "parts.csv", 
+        "relationship_type": "Is_Part_Of", 
+        "from_node_label": "Part", 
+        "from_node_column": "part_id", 
+        "to_node_label": "Assembly", 
+        "to_node_column": "assembly_id", 
+        "properties": ["quantity"]
+    }, 
+    "Supplied_By": {
+        "construction_type": "relationship", 
+        "source_file": "part_supplier_mapping.csv", 
+        "relationship_type": "Supplied_By", 
+        "from_node_label": "Part", 
+        "from_node_column": "part_id", 
+        "to_node_label": "Supplier", 
+        "to_node_column": "supplier_id", 
+        "properties": ["supplier_name", "lead_time_days", "unit_cost", "minimum_order_quantity", "preferred_supplier"]
+    }
+}

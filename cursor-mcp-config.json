@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "duckduckgo-search": {
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "duckduckgo-mcp",
+        "npx",
+        "duckduckgo-mcp-server"
+      ],
+      "env": {}
+    }
+  }
+} 
