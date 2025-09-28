@@ -14,7 +14,9 @@ langchain_community == 0.3.27
 langchain_openai == 0.3.30
 langchain_experimental == 0.3.4
 langchain_tavily == 0.2.11
-langgraph == 0.5.4
+langgraph == 0.6.7
+langgraph-prebuilt == 0.6.4
+pygraphviz == 1.14
 snowflake.core == 1.6.0
 trulens-core == 2.2.1
 git+https://github.com/truera/trulens.git@josh/default_str_handler#subdirectory=src/feedback

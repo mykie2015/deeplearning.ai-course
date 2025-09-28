@@ -67,20 +67,36 @@ class State(MessagesState):
 
 MAX_REPLANS = 2
 
-# Create a Snowflake session
-snowflake_connection_parameters = {
-    "account": os.getenv("SNOWFLAKE_ACCOUNT"),
-    "user": os.getenv("SNOWFLAKE_USER"),
-    "password": os.getenv("SNOWFLAKE_PAT"),
-    "database": os.getenv("SNOWFLAKE_DATABASE"),
-    "schema": os.getenv("SNOWFLAKE_SCHEMA"),
-    "role": os.getenv("SNOWFLAKE_ROLE"),
-    "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
-}
+# Create a Snowflake session (only if environment variables are set)
+def create_snowflake_session():
+    """Create Snowflake session only when needed and if credentials are available."""
+    snowflake_connection_parameters = {
+        "account": os.getenv("SNOWFLAKE_ACCOUNT"),
+        "user": os.getenv("SNOWFLAKE_USER"),
+        "password": os.getenv("SNOWFLAKE_PAT"),
+        "database": os.getenv("SNOWFLAKE_DATABASE"),
+        "schema": os.getenv("SNOWFLAKE_SCHEMA"),
+        "role": os.getenv("SNOWFLAKE_ROLE"),
+        "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
+    }
+    
+    # Check if required parameters are available
+    if not all([snowflake_connection_parameters["account"], 
+                snowflake_connection_parameters["user"],
+                snowflake_connection_parameters["password"]]):
+        return None
+    
+    return Session.builder.configs(snowflake_connection_parameters).create()
 
-snowpark_session = Session.builder.configs(
-    snowflake_connection_parameters
-).create()
+# Initialize session as None, create only when needed
+snowpark_session = None
+
+def get_snowflake_session():
+    """Get or create Snowflake session."""
+    global snowpark_session
+    if snowpark_session is None:
+        snowpark_session = create_snowflake_session()
+    return snowpark_session
 
 # create a python repl tool for importing in the lessons
 repl = PythonREPL()
@@ -305,7 +321,9 @@ class CortexAgentTool:
 
         return text, citations, sql, results_str
 
-cortex_agent_tool = CortexAgentTool(session=snowpark_session)
+# Initialize cortex_agent_tool only if Snowflake session is available
+_snowflake_session = get_snowflake_session()
+cortex_agent_tool = CortexAgentTool(session=_snowflake_session) if _snowflake_session else None
 
 from langgraph.prebuilt import create_react_agent
 from helper import agent_system_prompt
@@ -313,11 +331,14 @@ from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(model="gpt-4o")
 
-cortex_agent = create_react_agent(llm, tools=[cortex_agent_tool.run], prompt=agent_system_prompt(f"""
-        You are the Researcher. You can answer questions 
-        using customer deal data along with meeting notes.
-        Do not take any further action.
-    """))
+# Create cortex_agent only if cortex_agent_tool is available
+cortex_agent = None
+if cortex_agent_tool:
+    cortex_agent = create_react_agent(llm, tools=[cortex_agent_tool.run], prompt=agent_system_prompt(f"""
+            You are the Researcher. You can answer questions 
+            using customer deal data along with meeting notes.
+            Do not take any further action.
+        """))
 
 @instrument(
     span_type=SpanAttributes.SpanType.RETRIEVAL,
@@ -332,6 +353,18 @@ def cortex_agents_research_node(
     state: State,
 ) -> Command[Literal["executor"]]:
     query = state.get("agent_query", state.get("user_query", ""))
+    
+    # Check if cortex_agent is available
+    if cortex_agent is None:
+        error_message = HumanMessage(
+            content="Cortex agent is not available. Snowflake credentials not configured.", 
+            name="cortex_researcher"
+        )
+        return Command(
+            update={"messages": [error_message]},
+            goto="executor",
+        )
+    
     # Call the tool with the string query
     agent_response = cortex_agent.invoke({"messages":query})
     # Compose a message content string with all results new HumanMessage with the result
