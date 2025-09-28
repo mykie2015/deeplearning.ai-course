@@ -32,6 +32,13 @@ from trulens.otel.semconv.trace import SpanAttributes
 from trulens.core.otel.instrument import instrument
 from snowflake.core import Root
 from snowflake.core.cortex.lite_agent_service import AgentRunRequest
+# Local adapters for PostgreSQL + Chroma
+import sys
+import os
+# Add parent directory to path to find adapters module
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from adapters.local_snowpark import create_local_snowpark_session
+from adapters.local_cortex_agent import create_local_cortex_agent
 from pydantic import BaseModel, PrivateAttr
 from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
@@ -67,9 +74,15 @@ class State(MessagesState):
 
 MAX_REPLANS = 2
 
-# Create a Snowflake session (only if environment variables are set)
-def create_snowflake_session():
-    """Create Snowflake session only when needed and if credentials are available."""
+# Create a session (local PostgreSQL preferred, Snowflake fallback)
+def create_session():
+    """Create session with local PostgreSQL preferred, Snowflake as fallback."""
+    # Try local PostgreSQL first
+    local_session = create_local_snowpark_session()
+    if local_session:
+        return local_session
+    
+    # Fallback to Snowflake if available
     snowflake_connection_parameters = {
         "account": os.getenv("SNOWFLAKE_ACCOUNT"),
         "user": os.getenv("SNOWFLAKE_USER"),
@@ -86,16 +99,19 @@ def create_snowflake_session():
                 snowflake_connection_parameters["password"]]):
         return None
     
-    return Session.builder.configs(snowflake_connection_parameters).create()
+    try:
+        return Session.builder.configs(snowflake_connection_parameters).create()
+    except Exception:
+        return None
 
 # Initialize session as None, create only when needed
 snowpark_session = None
 
 def get_snowflake_session():
-    """Get or create Snowflake session."""
+    """Get or create session (local PostgreSQL preferred, Snowflake fallback)."""
     global snowpark_session
     if snowpark_session is None:
-        snowpark_session = create_snowflake_session()
+        snowpark_session = create_session()
     return snowpark_session
 
 # create a python repl tool for importing in the lessons
@@ -321,9 +337,23 @@ class CortexAgentTool:
 
         return text, citations, sql, results_str
 
-# Initialize cortex_agent_tool only if Snowflake session is available
-_snowflake_session = get_snowflake_session()
-cortex_agent_tool = CortexAgentTool(session=_snowflake_session) if _snowflake_session else None
+# Initialize cortex_agent_tool with local or Snowflake session
+_session = get_snowflake_session()
+cortex_agent_tool = None
+
+if _session:
+    # Try to create local cortex agent first
+    local_cortex_tool = create_local_cortex_agent(session=_session)
+    if local_cortex_tool:
+        cortex_agent_tool = local_cortex_tool
+    else:
+        # Fallback to Snowflake Cortex Agent if available
+        try:
+            from adapters.local_snowpark import LocalSnowparkSession
+            if not isinstance(_session, LocalSnowparkSession):
+                cortex_agent_tool = CortexAgentTool(session=_session)
+        except Exception:
+            pass
 
 from langgraph.prebuilt import create_react_agent
 from helper import agent_system_prompt
@@ -357,7 +387,7 @@ def cortex_agents_research_node(
     # Check if cortex_agent is available
     if cortex_agent is None:
         error_message = HumanMessage(
-            content="Cortex agent is not available. Snowflake credentials not configured.", 
+            content="Cortex agent is not available. Please configure PostgreSQL or Snowflake credentials.", 
             name="cortex_researcher"
         )
         return Command(

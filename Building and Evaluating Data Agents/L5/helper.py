@@ -32,6 +32,13 @@ from trulens.otel.semconv.trace import SpanAttributes
 from trulens.core.otel.instrument import instrument
 from snowflake.core import Root
 from snowflake.core.cortex.lite_agent_service import AgentRunRequest
+# Local adapters for PostgreSQL + Chroma
+import sys
+import os
+# Add parent directory to path to find adapters module
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from adapters.local_snowpark import create_local_snowpark_session
+from adapters.local_cortex_agent import create_local_cortex_agent
 from pydantic import BaseModel, PrivateAttr
 from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
@@ -67,20 +74,45 @@ class State(MessagesState):
 
 MAX_REPLANS = 2
 
-# Create a Snowflake session
-snowflake_connection_parameters = {
-    "account": os.getenv("SNOWFLAKE_ACCOUNT"),
-    "user": os.getenv("SNOWFLAKE_USER"),
-    "password": os.getenv("SNOWFLAKE_PAT"),
-    "database": os.getenv("SNOWFLAKE_DATABASE"),
-    "schema": os.getenv("SNOWFLAKE_SCHEMA"),
-    "role": os.getenv("SNOWFLAKE_ROLE"),
-    "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
-}
+# Create a session (local PostgreSQL preferred, Snowflake fallback)
+def create_session():
+    """Create session with local PostgreSQL preferred, Snowflake as fallback."""
+    # Try local PostgreSQL first
+    local_session = create_local_snowpark_session()
+    if local_session:
+        return local_session
+    
+    # Fallback to Snowflake if available
+    snowflake_connection_parameters = {
+        "account": os.getenv("SNOWFLAKE_ACCOUNT"),
+        "user": os.getenv("SNOWFLAKE_USER"),
+        "password": os.getenv("SNOWFLAKE_PAT"),
+        "database": os.getenv("SNOWFLAKE_DATABASE"),
+        "schema": os.getenv("SNOWFLAKE_SCHEMA"),
+        "role": os.getenv("SNOWFLAKE_ROLE"),
+        "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
+    }
+    
+    # Check if required parameters are available
+    if not all([snowflake_connection_parameters["account"], 
+                snowflake_connection_parameters["user"],
+                snowflake_connection_parameters["password"]]):
+        return None
+    
+    try:
+        return Session.builder.configs(snowflake_connection_parameters).create()
+    except Exception:
+        return None
 
-snowpark_session = Session.builder.configs(
-    snowflake_connection_parameters
-).create()
+# Initialize session as None, create only when needed
+snowpark_session = None
+
+def get_snowflake_session():
+    """Get or create session (local PostgreSQL preferred, Snowflake fallback)."""
+    global snowpark_session
+    if snowpark_session is None:
+        snowpark_session = create_session()
+    return snowpark_session
 
 # create a python repl tool for importing in the lessons
 repl = PythonREPL()
@@ -305,19 +337,88 @@ class CortexAgentTool:
 
         return text, citations, sql, results_str
 
-cortex_agent_tool = CortexAgentTool(session=snowpark_session)
+# Initialize cortex_agent_tool with local or Snowflake session
+_session = get_snowflake_session()
+cortex_agent_tool = None
+
+if _session:
+    # Try to create local cortex agent first
+    local_cortex_tool = create_local_cortex_agent(session=_session)
+    if local_cortex_tool:
+        cortex_agent_tool = local_cortex_tool
+    else:
+        # Fallback to Snowflake Cortex Agent if available
+        try:
+            from adapters.local_snowpark import LocalSnowparkSession
+            if not isinstance(_session, LocalSnowparkSession):
+                cortex_agent_tool = CortexAgentTool(session=_session)
+        except Exception:
+            pass
 
 from langgraph.prebuilt import create_react_agent
 from helper import agent_system_prompt
 from langchain_openai import ChatOpenAI
 
+# Import LocalSnowparkSession for type checking
+from adapters.local_snowpark import LocalSnowparkSession
+
+# Store the original CortexAgentTool class before we override it
+_OriginalCortexAgentTool = CortexAgentTool
+
+# Enhanced compatibility CortexAgentTool class that works with both local and Snowflake sessions
+class CortexAgentTool:
+    """Enhanced CortexAgentTool that works with both local and Snowflake sessions"""
+    
+    name: str = "CortexAgent"
+    description: str = "answers questions using sales conversations and metrics"
+    args_schema: Type[CortexAgentArgs] = CortexAgentArgs
+
+    def __init__(self, session):
+        if isinstance(session, LocalSnowparkSession):
+            # Use local cortex agent for local sessions
+            local_tool = create_local_cortex_agent(session=session)
+            if local_tool:
+                self._local_tool = local_tool
+                self._session = session
+                # Copy attributes from local tool
+                self.run = local_tool.run
+                self.name = getattr(local_tool, 'name', self.name)
+                self.description = getattr(local_tool, 'description', self.description)
+            else:
+                raise RuntimeError("Failed to create local cortex agent")
+        else:
+            # Use original Snowflake cortex agent for Snowflake sessions
+            try:
+                # Initialize as original Snowflake CortexAgentTool
+                original_tool = _OriginalCortexAgentTool(session=session)
+                # Copy all attributes from the original tool
+                for attr_name in dir(original_tool):
+                    if not attr_name.startswith('_'):
+                        setattr(self, attr_name, getattr(original_tool, attr_name))
+                self._session = session
+                self._original_tool = original_tool
+            except Exception as e:
+                raise RuntimeError(f"Failed to create Snowflake cortex agent: {e}")
+    
+    def __getattr__(self, name):
+        # Delegate any other method calls to the underlying tool
+        if hasattr(self, '_local_tool'):
+            return getattr(self._local_tool, name)
+        elif hasattr(self, '_original_tool'):
+            return getattr(self._original_tool, name)
+        else:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
 llm = ChatOpenAI(model="gpt-4o")
 
-cortex_agent = create_react_agent(llm, tools=[cortex_agent_tool.run], prompt=agent_system_prompt(f"""
-        You are the Researcher. You can answer questions 
-        using customer deal data along with meeting notes.
-        Do not take any further action.
-    """))
+# Create cortex_agent only if cortex_agent_tool is available
+cortex_agent = None
+if cortex_agent_tool:
+    cortex_agent = create_react_agent(llm, tools=[cortex_agent_tool.run], prompt=agent_system_prompt(f"""
+            You are the Researcher. You can answer questions 
+            using customer deal data along with meeting notes.
+            Do not take any further action.
+        """))
 
 @instrument(
     span_type=SpanAttributes.SpanType.RETRIEVAL,
@@ -332,6 +433,18 @@ def cortex_agents_research_node(
     state: State,
 ) -> Command[Literal["executor"]]:
     query = state.get("agent_query", state.get("user_query", ""))
+    
+    # Check if cortex_agent is available
+    if cortex_agent is None:
+        error_message = HumanMessage(
+            content="Cortex agent is not available. Please configure PostgreSQL or Snowflake credentials.", 
+            name="cortex_researcher"
+        )
+        return Command(
+            update={"messages": [error_message]},
+            goto="executor",
+        )
+    
     # Call the tool with the string query
     agent_response = cortex_agent.invoke({"messages":query})
     # Compose a message content string with all results new HumanMessage with the result

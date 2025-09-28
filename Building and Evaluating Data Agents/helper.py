@@ -32,6 +32,12 @@ from trulens.otel.semconv.trace import SpanAttributes
 from trulens.core.otel.instrument import instrument
 from snowflake.core import Root
 from snowflake.core.cortex.lite_agent_service import AgentRunRequest
+# Local adapters for PostgreSQL + Chroma
+import sys
+# Add current directory to path to find adapters module
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from adapters.local_snowpark import create_local_snowpark_session
+from adapters.local_cortex_agent import create_local_cortex_agent
 from pydantic import BaseModel, PrivateAttr
 from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
@@ -68,19 +74,45 @@ class State(MessagesState):
 MAX_REPLANS = 2
 
 # Create a Snowflake session
-snowflake_connection_parameters = {
-    "account": os.getenv("SNOWFLAKE_ACCOUNT"),
-    "user": os.getenv("SNOWFLAKE_USER"),
-    "password": os.getenv("SNOWFLAKE_PAT"),
-    "database": os.getenv("SNOWFLAKE_DATABASE"),
-    "schema": os.getenv("SNOWFLAKE_SCHEMA"),
-    "role": os.getenv("SNOWFLAKE_ROLE"),
-    "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
-}
+# Create a session (local PostgreSQL preferred, Snowflake fallback)
+def create_session():
+    """Create session with local PostgreSQL preferred, Snowflake as fallback."""
+    # Try local PostgreSQL first
+    local_session = create_local_snowpark_session()
+    if local_session:
+        return local_session
+    
+    # Fallback to Snowflake if available
+    snowflake_connection_parameters = {
+        "account": os.getenv("SNOWFLAKE_ACCOUNT"),
+        "user": os.getenv("SNOWFLAKE_USER"),
+        "password": os.getenv("SNOWFLAKE_PAT"),
+        "database": os.getenv("SNOWFLAKE_DATABASE"),
+        "schema": os.getenv("SNOWFLAKE_SCHEMA"),
+        "role": os.getenv("SNOWFLAKE_ROLE"),
+        "warehouse": os.getenv("SNOWFLAKE_WAREHOUSE"),
+    }
+    
+    # Check if required parameters are available
+    if not all([snowflake_connection_parameters["account"], 
+                snowflake_connection_parameters["user"],
+                snowflake_connection_parameters["password"]]):
+        return None
+    
+    try:
+        return Session.builder.configs(snowflake_connection_parameters).create()
+    except Exception:
+        return None
 
-snowpark_session = Session.builder.configs(
-    snowflake_connection_parameters
-).create()
+# Initialize session as None, create only when needed
+snowpark_session = None
+
+def get_snowflake_session():
+    """Get or create session (local PostgreSQL preferred, Snowflake fallback)."""
+    global snowpark_session
+    if snowpark_session is None:
+        snowpark_session = create_session()
+    return snowpark_session
 
 # create a python repl tool for importing in the lessons
 repl = PythonREPL()
@@ -305,7 +337,23 @@ class CortexAgentTool:
 
         return text, citations, sql, results_str
 
-cortex_agent_tool = CortexAgentTool(session=snowpark_session)
+# Initialize cortex_agent_tool with local or Snowflake session
+_session = get_snowflake_session()
+cortex_agent_tool = None
+
+if _session:
+    # Try to create local cortex agent first
+    local_cortex_tool = create_local_cortex_agent(session=_session)
+    if local_cortex_tool:
+        cortex_agent_tool = local_cortex_tool
+    else:
+        # Fallback to Snowflake Cortex Agent if available
+        try:
+            from adapters.local_snowpark import LocalSnowparkSession
+            if not isinstance(_session, LocalSnowparkSession):
+                cortex_agent_tool = CortexAgentTool(session=_session)
+        except Exception:
+            pass
 
 from langgraph.prebuilt import create_react_agent
 from helper import agent_system_prompt

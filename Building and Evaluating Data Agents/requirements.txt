@@ -10,6 +10,11 @@
 # python==3.11.13
 # in this file, insert all the pip install needs, include revision
 
+# Local adapters for PostgreSQL + Chroma (replaces Snowflake)
+psycopg2-binary>=2.9.7
+chromadb>=0.4.15
+python-dotenv>=1.0.0
+
 langchain_community == 0.3.27
 langchain_openai == 0.3.30
 langchain_experimental == 0.3.4

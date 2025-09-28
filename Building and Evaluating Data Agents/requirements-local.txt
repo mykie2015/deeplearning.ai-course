@@ -1,0 +1,22 @@
+# Additional requirements for local PostgreSQL + Chroma setup
+# Add these to your existing requirements.txt
+
+# PostgreSQL adapter
+psycopg2-binary>=2.9.7
+
+# Vector database
+chromadb>=0.4.15
+
+# OpenAI integration (for embeddings and LLM)
+openai>=1.3.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Optional: For enhanced development experience
+ipython>=8.0.0
+jupyter>=1.0.0
