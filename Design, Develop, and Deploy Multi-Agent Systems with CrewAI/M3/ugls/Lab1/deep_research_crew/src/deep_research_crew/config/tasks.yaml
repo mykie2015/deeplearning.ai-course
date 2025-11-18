@@ -1,0 +1,116 @@
+# Define the task to create the research plan.
+# This task involves breaking down the user query into main and secondary topics.
+create_research_plan:
+  description: >
+    Break down the research query "{user_query}" into MAIN topics (core
+    essential areas) and SECONDARY topics (supporting areas). Clearly separate and
+    prioritize these categories for parallel research execution.
+  expected_output: >
+    A research plan with: 1) MAIN TOPICS: Core research areas crucial
+    for answering the query, 2) SECONDARY TOPICS: Supporting research areas that provide
+    context, 3) Key questions for each topic category, 4) Research priorities and
+    success criteria
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  ### END CODE HERE ###
+
+# Define the task to research main topics.
+research_main_topics:
+  description: >
+    Using the research plan, focus on the MAIN topics and search the internet
+    to collect comprehensive information. Verify information across multiple sources
+    and cite all sources used.
+  expected_output: >
+    Comprehensive research data for MAIN topics including: 1) Detailed
+    information for each main research topic with citations, 2) Key facts and statistics,
+    3) Multiple source perspectives, 4) Source credibility notes
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  # Set the context for this task
+  context:
+  - None
+  ### END CODE HERE ###
+
+# Define the task to research secondary topics.
+research_secondary_topics:
+  description: >
+    Using the research plan, focus on the SECONDARY topics and search the
+    internet to collect supporting information. Verify information across multiple
+    sources and cite all sources used.
+  expected_output: >
+    Comprehensive research data for SECONDARY topics including: 1)
+    Supporting information for each secondary research topic with citations, 2) Contextual
+    facts and background, 3) Multiple source perspectives, 4) Source credibility notes
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  # Set the context for this task
+  context:
+  - None
+  ### END CODE HERE ###
+
+# Define the task to validate main topics.
+validate_main_topics:
+  description: >
+    Review all collected MAIN topic research data for accuracy and consistency.
+    Identify any conflicting information, potential misinformation, or gaps that need
+    addressing. Flag areas requiring human review if needed.
+  expected_output: >
+    Main topics quality assessment report with all the original information you got.
+    Include numbers we can use to plot chart plus: 
+    1) Verified facts vs. questionable information, 2) Consistency check results,
+    3) Source reliability ratings, 4) Approval for final report generation. Make sure this
+    is as comprehensive as possible for final report generation'
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  # Set the context for this task
+  context:
+  - None
+  ### END CODE HERE ###
+
+# Define the task to validate secondary topics.
+validate_secondary_topics:
+  description: >
+    Review all collected SECONDARY topic research data for accuracy and
+    consistency. Identify any conflicting information, potential misinformation, or
+    gaps that need addressing. Flag areas requiring human review if needed.
+  expected_output: >
+    Secondary topics quality assessment report with all the original information you got.
+    Include number we can use to plot chart plus:
+    1) Verified facts vs. questionable information, 2) Consistency check results,
+    3) Source reliability ratings, 4) Approval for final report generation. Make sure this
+    is as comprehensive as possible for final report generation
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  # Set the context for this task
+  context:
+  - None
+  ### END CODE HERE ###
+
+# Define the task to write the final report.
+write_final_report:
+  description: >
+    Create a comprehensive report that answers the original query "{user_query}"
+    using all validated research data from both MAIN and SECONDARY topic branches.
+    Structure it with clear sections, include citations, and provide actionable insights.
+    Use the custom tool to create intuitive charts based on the verified information. 
+    Include the generated charts into the final report, any chart should be loadded from the deep_research_crew/plots/ path, so you just append the file name after that'
+
+  expected_output: >
+    A final research report containing: 1) Executive summary, 2) Detailed
+    findings that answer the user query using main topics, 3) Supporting context from
+    secondary topics, 4) Complete source citations, 5) Key insights and recommendations.
+    Must include Summary, Insights/Recommendations, and Citations sections.
+    Whenever possible, include the charts inside the report'
+  ### START CODE HERE ###
+  # Set the agent that will perform this task
+  agent: None
+  # Set the context for this task
+  context:
+  - None
+  - None
+  ### END CODE HERE ###

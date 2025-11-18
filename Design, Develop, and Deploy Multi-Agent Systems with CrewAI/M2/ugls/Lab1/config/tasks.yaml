@@ -1,0 +1,32 @@
+---
+create_research_plan:
+  description: Break down the research query "{user_query}" into specific topics and
+    key questions that need investigation. Create a focused research plan.
+  expected_output: 'A research plan with: 1) Main research topics to investigate,
+    2) Key questions for each topic, 3) Success criteria for the research'
+    
+gather_research_data:
+  description: Using the research plan, search the internet and scrape relevant websites
+    to collect comprehensive information on all identified topics. Verify information
+    across multiple sources and cite all sources used.
+  expected_output: 'Comprehensive research data including: 1) Information for each
+    research topic with citations, 2) Key facts and statistics, 3) Multiple source
+    perspectives, 4) Source credibility notes'
+
+verify_information_quality:
+  description: Review all collected research data for accuracy and consistency. Identify
+    any conflicting information, potential misinformation, or gaps that need addressing.
+    Flag areas requiring human review if needed.
+  expected_output: 'Quality assessment report with: 1) All the original data you got,
+    2) Verified facts vs. questionable information, 3) Consistency check results,
+    4) Source reliability ratings, 5) Approval for final report generation. Make sure this
+    is as comprehensive as possible for final report generation'
+
+write_final_report:
+  description: Create a comprehensive report that answers the original query "{user_query}"
+    using all verified research data. Structure it with clear sections, include citations,
+    and provide actionable insights.
+  expected_output: 'A final research report containing: 1) Executive summary, 2) Detailed
+    findings that answer the user query, 3) Supporting evidence and analysis, 4) Complete
+    source citations, 5) Key insights and recommendations'
+

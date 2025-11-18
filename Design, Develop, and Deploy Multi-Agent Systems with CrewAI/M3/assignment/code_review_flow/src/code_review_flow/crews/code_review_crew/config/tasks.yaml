@@ -1,0 +1,51 @@
+analyze_code_quality:
+  description: >
+        1. Review the code changes in the pull request.
+        2. Identify any style issues, potential bugs, or maintainability concerns.
+        3. For each issue, decide if it's critical (must be fixed) or minor (suggestion).
+        PR content: \n{file_content}
+  expected_output: >
+    A JSON with keys: 'critical_issues' (array of issues that must be fixed), 
+    'minor_issues' (array of suggested improvements), and 'reasoning' (explanation of your decisions).
+  name: Analyze Code Quality
+  agent: senior_developer
+
+review_security:
+  description: >
+        1. Examine the code changes (PR) for potential security vulnerabilities.
+        2. Identify any security issues such as injection risks, authentication problems, or data exposure.
+        3. Determine the risk level (high, medium, low) for each security concern.
+        4. Decide if any security issues are severe enough to block automatic approval.
+        You can use the WebsiteSearchTool to extract additional information on good security practices.
+        PR content: \n{file_content}
+        Use the SerperDevTool to find the most relevant security best practices from OWASP"
+        and pass the URLs to the ScrapeWebsiteTool to get detailed information.
+  expected_output: >
+    A JSON with keys: 
+    'security_vulnerabilities' (a dictionary with keys description, risk_level, and evidence), 
+    possible risk levels are 'low', 'medium', and 'high',
+    'blocking' (boolean indicating if security issues should block approval), 
+    'highest_risk' (the most severe risk level found), and 
+    'security_recommendations' (specific fixes for identified vulnerabilities).
+  name: Review Security
+  agent: security_engineer
+
+
+summarize_findings:
+  description: >
+        1. Review the findings from both the code quality and security analyses.
+        2. Determine if the pull request can be automatically approved based on these findings.
+        3. If approval is not possible, decide whether to request specific changes from the developer or escalate to human review.
+        4. Provide a clear explanation of your decision and any required next steps.
+        PR content: \n{file_content}
+  ### START CODE HERE ###
+  # write the expected output in detail following the exercise instructions
+  expected_output: >
+    None
+  name: Summarize Findings
+  agent: tech_lead
+  # write the context (list of tasks that need to finish before this one)
+  context:
+  - None
+  - None
+  ### END CODE HERE ###

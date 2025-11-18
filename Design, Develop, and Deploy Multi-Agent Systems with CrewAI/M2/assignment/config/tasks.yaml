@@ -1,0 +1,51 @@
+analyze_code_quality:
+  description: >
+    1. Review the code changes in the pull request.
+    2. Identify any style issues, potential bugs, or maintainability concerns.
+    3. For each issue, decide if it's critical (must be fixed) or minor (suggestion).
+    PR content: 
+    {file_content}
+  expected_output: >
+    A JSON with keys: 'critical_issues' (array of issues that must be fixed), 
+    'minor_issues' (array of suggested improvements), and 'reasoning' (explanation of your decisions).
+  name: Analyze Code Quality
+
+review_security:
+  description: >
+    1. Review the findings from both the code quality and security analyses.
+    2. Determine if the pull request can be automatically approved based on these findings.
+    3. If approval is not possible, decide whether to request specific changes from the developer or escalate to human review.
+    4. Provide a clear explanation of your decision and any required next steps.
+    PR content: 
+    {file_content}
+  expected_output: >
+    A JSON with keys: 
+    'security_vulnerabilities' (a list of dictionaries, each with keys: description, risk_level, and evidence), 
+    where possible risk levels are 'low', 'medium', and 'high',
+    'blocking' (boolean indicating if security issues should block approval), 
+    'highest_risk' (the most severe risk level found), and 
+    'security_recommendations' (specific fixes for identified vulnerabilities).
+  name: Review Security
+
+make_review_decision:
+  description: >
+    1. Based on the results from 'analyze_code_quality' and 'review_security', make a final review decision.
+    2. Decide whether to approve the changes, request changes, or escalate to human review.
+    3. Summarize the key findings from both analyses to support your decision.
+    4. If requesting changes, provide a clear list of what must be fixed.
+    5. If approving, include appropriate comments to accompany the approval.
+    6. If escalating, explain why human review is necessary.
+    7. Include any additional recommendations or observations.
+    PR content: 
+    {file_content}
+  expected_output: >
+    A comprehensive review decision that includes: (1) Your final decision (approve, 
+    request changes, or escalate to human review), (2) A summary of the key findings from both analyses, 
+    (3) If requesting changes, a clear list of what must be fixed, (4) If approving, appropriate 
+    comments to include with the approval, (5) If escalating, a clear explanation of why human 
+    review is needed, and (6) Any additional recommendations or observations.
+  context:
+    - analyze_code_quality
+    - review_security
+  name: Review Decision
+  
