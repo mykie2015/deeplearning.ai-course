@@ -35,12 +35,12 @@ class DeepResearchFlow(Flow[ResearchState]):
         if self.state.user_query != "":
             print(f"\n💭 Previous query: {self.state.user_query}")
         print("\n❓ What would you like to know?")
-        print(">> ", end="", flush=True)
-        
-        # Use raw_input style for better visibility
-        import readline  # This helps with input echo on Unix/Mac
+        # Use standard input for better compatibility
+        import sys
+        import readline # Helps with input echo on Unix/Mac
+        sys.stdout.flush()
         try:
-            self.state.user_query = input()  # Simple input() works best with readline imported
+            self.state.user_query = input(">> ")
         except EOFError:
             self.state.user_query = ""
         
@@ -100,6 +100,18 @@ class DeepResearchFlow(Flow[ResearchState]):
         llm = LLM(model="gpt-4o-mini")
         # call the llm with the prompt and save the result to the final_answer state variable
         self.state.final_answer = llm.call(messages=prompt)
+        
+        # Save the simple answer to a file for consistency
+        try:
+            report_path = "../simple_answer.md"
+            with open(report_path, "w", encoding="utf-8") as f:
+                f.write(f"# Simple Answer\n\nQuery: {self.state.user_query}\n\nAnswer:\n{self.state.final_answer}")
+            import os
+            abs_path = os.path.abspath(report_path)
+            print(f"   ✅ Answer saved to: {abs_path}")
+        except Exception as e:
+            print(f"   ❌ Failed to save answer: {str(e)}")
+            
         ### END CODE HERE ###
         print("   ✅ Answer generated successfully")
         print("-"*70)
@@ -135,33 +147,16 @@ class DeepResearchFlow(Flow[ResearchState]):
             print("   1. Provide more details")
             print("   2. Press Enter to skip and proceed anyway")
             print("   3. Type 'skip' to proceed with current query")
-            print("\nYour response (will auto-skip in 60s):")
-            print(">> ", end="", flush=True)
+            print("\nYour response:")
             
-            # Set a timeout for input
-            import select
-            timeout = 60  # 60 seconds
-            
-            # Use select to implement timeout (Unix/macOS only)
-            additional_info = ""
-            if hasattr(select, 'select'):
-                ready, _, _ = select.select([sys.stdin], [], [], timeout)
-                if ready:
-                    try:
-                        import readline
-                        additional_info = input()
-                    except (EOFError, KeyboardInterrupt):
-                        additional_info = "skip"
-                else:
-                    additional_info = "skip"
-                    print("\n⏰ Timeout reached - proceeding with original query")
-            else:
-                # Fallback - just use input with timeout warning
-                try:
-                    import readline
-                    additional_info = input()
-                except (EOFError, KeyboardInterrupt):
-                    additional_info = "skip"
+            # Use standard input instead of complex timeout logic
+            import sys
+            import readline
+            sys.stdout.flush()
+            try:
+                additional_info = input(">> ")
+            except (EOFError, KeyboardInterrupt):
+                additional_info = "skip"
             
             if additional_info and additional_info.lower() != 'skip':
                 print(f"\n✅ Additional context received: {additional_info[:50]}...")
