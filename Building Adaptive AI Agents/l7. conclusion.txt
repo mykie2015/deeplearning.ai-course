@@ -1,0 +1,15 @@
+Congratulations on completing the course.
+0:01
+In this course, you've learned how adaptive AI agents
+0:04
+can improve from experience
+0:06
+by changing their behavior, organizing their knowledge,
+0:10
+and when needed, adapting their model weights.
+0:13
+You now have practical techniques to build agents that become more capable
+0:16
+when doing the same work from one day to the next.
+0:19
+We are looking forward to seeing what you've built on your own.

@@ -1,0 +1,213 @@
+Today's agents can write code, use tools, and solve complex tasks.
+0:03
+But they often repeat the same
+0:05
+mistakes because they don't carry experience forward.
+0:08
+In this lesson, you'll build a mental model for adaptive AI agents.
+0:12
+learn why forgetting is expensive and see
+0:14
+the main places an agent can improve.
+0:16
+Let's dive in.
+0:18
+Let's imagine you're working with a coding agent on Monday.
+0:21
+You ask it to run your Python tests, but your Python interpreter
+0:23
+can't find one of the project modules.
+0:26
+The agent investigates, discovers the correct project command,
+0:29
+gets the test passing. Great.
+0:31
+Now on Tuesday, you open a fresh chat
+0:34
+and ask it to a very similar task.
+0:36
+With no memory of Monday, it runs the wrong command again,
+0:39
+hits the same error, and spends time and tokens
+0:41
+trying to rediscover the same fix.
+0:44
+So how do we want Wednesday to be different?
+0:46
+Well, we want it to remember the proven command from Monday
+0:49
+and start there, bypassing the wasted time and tokens spent on Tuesday.
+0:53
+That's the gap we're trying to close in this course.
+0:56
+Let's also take a look at the cost of that forgetting.
+0:59
+Our agent on Tuesday repeats the same investigation
+1:02
+and spends more time and tokens on fixing that issue again.
+1:05
+Without memory and learning, every repeat iteration
+1:08
+is another chance for the model to
+1:10
+derive the wrong answer and spend more tokens.
+1:12
+In contrast, if the agent learns from day one's experience,
+1:16
+then day two will be a lot better and almost free.
+1:19
+Before we learn about improving how agents can learn,
+1:21
+let's briefly get clear on what we mean
+1:23
+by an agent. An agent can be defined as a system
+1:26
+that can take in information from its environment,
+1:29
+reason about what to do next using an LLM,
+1:31
+and use tools to act on its environment.
+1:34
+If an agent has memory, it can also
+1:36
+hold on to useful experience from the past.
+1:38
+Without memory, the agent may complete today's task,
+1:41
+but won't retain what it's learned tomorrow.
+1:43
+Let's use our coding agent's test failure
+1:45
+example to see the agent loop in action.
+1:47
+We start the loop with a user request,
+1:49
+ask an agent to run our python tests.
+1:51
+During inference, the model decides it needs to inspect the project repository.
+1:55
+So it requests a tool from the agent harness.
+1:58
+The harness runs the tool to
+1:59
+inspect the project and returns the result.
+2:01
+The model then chooses to run a separate test command,
+2:04
+requests another tool, runs it, and another error is returned.
+2:07
+The model's responses and tool results, including the error, then
+2:11
+become part of the context history for the next iteration.
+2:13
+This repeats until the tests pass or the agent stops.
+2:16
+Since we just used the word harness, let's also unpack that.
+2:20
+The LLM is the raw reasoning power for your agent.
+2:22
+The harness is the software scaffolding around it.
+2:25
+It assembles the context the model sees,
+2:27
+gives the model access and ability to run tools,
+2:30
+records the results to memory.
+2:32
+and calls the model again within the agent loop.
+2:35
+Put the model in the harness
+2:36
+together and you have a working agent.
+2:39
+Let's also see the different types of memories our agents can have.
+2:43
+We can put these memories into four categories.
+2:45
+First, the messages and tool results
+2:46
+being used right now are Working memory.
+2:49
+Also, anything that happened in previous agent runs becomes Episodic memory.
+2:53
+The project specific facts and knowledge becomes Semantic memory,
+2:56
+and the workflow steps that are
+2:58
+learned by the agent become Procedural memory.
+3:00
+In the next lesson, we can focus on that last one,
+3:03
+turning experience into reusable skills.
+3:06
+Our previous course with DeepLearning.AI
+3:08
+on building memory aware agents covers this in depth.
+3:11
+Feel free to check this out if you want to learn more.
+3:14
+So how do we build these long-term memories? We start with traces.
+3:17
+A trace is a complete record of every event
+3:20
+that occurred within an agent interaction.
+3:22
+Let's see an example of a trace and its components.
+3:25
+Imagine our coding agent has a task to solve.
+3:27
+For an example, running Python tests on our code base.
+3:30
+It records the project files the
+3:32
+agent inspected while working on the task.
+3:34
+We also have a record of the
+3:36
+actions that were taken to solve the problem.
+3:38
+The outcomes from these actions and the corrections taken by the agent.
+3:41
+We can use these traces as raw materials for learning.
+3:44
+In the next lesson, we'll use
+3:46
+the agent's traces to adapt its skills,
+3:48
+so it can learn from what it did today
+3:50
+for better completion of tasks tomorrow.
+3:53
+Lastly, if you want your agents to improve over time,
+3:56
+where should you intervene first?
+3:58
+The main question you should ask is this.
+4:00
+Can better context and instructions enhance your agent's performance?
+4:04
+If so, then you can use the two main methods
+4:07
+that we group as TOKEN SPACE adaptation.
+4:09
+Firstly, you will create an enhancement loop
+4:12
+to make your agent's skills adapt and get better.
+4:14
+Then you will build adaptive memory using a knowledge graph.
+4:18
+We will see these in the next three lessons.
+4:20
+If these methods have been exhausted and nothing more
+4:22
+can be done to make the agent get better,
+4:25
+then we will focus on any possible enhancements
+4:27
+in the model itself within the WEIGHT SPACE.
+4:30
+This will be our focus of the last lesson.
+4:33
+So now, let's go to the next lesson where we will build a
+4:37
+behavioral adaptation layer for our agents to learn and get better from its traces.

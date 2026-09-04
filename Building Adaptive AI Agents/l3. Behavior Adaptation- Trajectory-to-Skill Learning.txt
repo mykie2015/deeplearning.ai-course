@@ -1,0 +1,253 @@
+In this lesson, you'll turn an agent's traces,
+0:01
+which are its past conversations, tool calls,
+0:04
+errors, and fixes into reusable skills.
+0:07
+So tomorrow's agent can avoid repeating yesterday's mistakes.
+0:11
+All right, let's go.
+0:13
+First, let's see what skill induction means.
+0:16
+We take the raw traces, which is
+0:17
+the log of what the agent tried,
+0:19
+where it failed, and what finally worked.
+0:22
+The Induction Engine uses an LLM to review those traces
+0:26
+and drafts a short procedure in the form of a skill.md file.
+0:30
+Then, with a human approval, this
+0:32
+skill can go into our Skill Box,
+0:34
+which is a managed collection of skills available to the agent.
+0:37
+Within this skill induction process,
+0:39
+we are turning the agent's run into a skill other agents can
+0:42
+also use in the future. So
+0:44
+how do we continually improve these skills
+0:45
+so that agent gets better every day?
+0:48
+Let's start with our approved skills in the agent Skill Box.
+0:52
+As the agent uses these skills to accomplish new tasks,
+0:55
+more traces will start to pile up
+0:57
+as the agent interacts with its environment.
+0:59
+Now outside of the main agent's working path,
+1:02
+We then run the skill induction engine to take those traces
+1:05
+and propose an enhanced version of
+1:07
+the skill, plus evidence for each proposal.
+1:10
+In the next step, the human
+1:11
+reviewer can review the enhanced skill proposal
+1:14
+and either approve the skill,
+1:16
+promoting it to the Skill Box to be used by the agent,
+1:19
+or decline, giving the skill induction engine a reason
+1:22
+so that it can generate a better proposed enhancement.
+1:25
+So why do we need a human in the loop?
+1:27
+Think about what approval actually does.
+1:30
+It turns a proposal into behavior.
+1:32
+Once a skill is approved, the agent retrieves it
+1:35
+on every matching task from now on.
+1:37
+That's the power and the risk.
+1:39
+If a bad skill slips through,
+1:41
+the agent repeats the mistake every time and the damage compounds.
+1:45
+Another risk is that traces are the data
+1:47
+the agent collected from the world.
+1:50
+Incorrect or even deliberately planted instructions
+1:53
+could get proposed as a skill.
+1:55
+The human review is the gate that stops a poison trace
+1:58
+from becoming behavior. And because a human
+2:00
+clicks approve or reject with a reason,
+2:03
+every skill in the skill box has an owner,
+2:05
+and every rejection teaches the engine what to fix next time.
+2:09
+Now let's move over to the notebook
+2:11
+where you will build the skill induction loop.
+2:13
+First, let's set up our environment.
+2:20
+Okay, our database is now set up.
+2:22
+We'll be using two open source packages,
+2:24
+Oracle Agent Memory to hold our traces
+2:27
+and LangGraph Oracle DB to run our skill induction loop.
+2:31
+Let's now see the agent before the enhancement of skill induction.
+2:35
+We're first giving our agent a task,
+2:37
+which is running our project's test suite.
+2:39
+We can see the agent accessing
+2:41
+a basic skill from our skill box.
+2:43
+And an agent hits an error. This is the
+2:45
+behavior we want our agents to stop repeating.
+2:48
+We want our agent to learn from
+2:50
+this result and get better in the future.
+2:52
+Let's now look at some synthetic traces and
+2:55
+five skills that we'll load into the database.
+2:58
+As you can see, these traces are
+3:00
+broken down into conversation turns, tool calls
+3:03
+skill uses, workflow steps,
+3:05
+preferences, and errors and fixes used by the agent.
+3:09
+We've also added five skills that are available in our skill box.
+3:13
+Below this, you can see an example of one of those traces.
+3:17
+Let's now see the five skills available in the skill box.
+3:21
+The five skills we have available are brainstorming,
+3:23
+requesting-code-review, run-the-tests,
+3:27
+systematic-debugging, and writing-plans.
+3:30
+The skill example shows the name, topic, and the actual procedure.
+3:35
+We can see here that version one of run-the-tests skill is active.
+3:39
+Now let's see the Skill Induction Engine at work.
+3:42
+We can see the Skill Induction Engine contract,
+3:45
+which is the instruction given to the LLM.
+3:48
+This contract takes all of the episodes from one topic,
+3:50
+distills them down into reusable procedures and lessons,
+3:53
+and outputs the steps, tools, errors, fixes,
+3:57
+and any provenance needed.
+3:59
+The final step is the human review gate.
+4:01
+By clicking the dropdown, you can see the exact instruction
+4:04
+given to the LLM. From our traces, the skill induction engine
+4:07
+has found a repeated failure along with the fix.
+4:11
+From this, the skill induction engine has proposed
+4:14
+a new enhanced version of the skill.
+4:17
+This enhanced version includes four steps
+4:20
+the agent can follow to achieve a task.
+4:23
+Here we're going to run the skill induction loop manually.
+4:27
+And we can see version two of run-the-tests is awaiting review.
+4:31
+Let's now see the human review step in our skill induction loop.
+4:38
+Within this cell, we can see a comparison of version one
+4:40
+and version two of the skills.
+4:43
+And at the top of the cell, we can
+4:45
+either approve the skill or reject it with a reason.
+4:48
+Okay, let's now approve the enhanced skill with a reason.
+4:53
+Now the enhanced skill has been promoted to active in the skillbox,
+4:56
+replacing the previous version.
+4:59
+Let's take another look at our skillbox.
+5:02
+We can now see version two of our skill has been promoted
+5:05
+to the Skill Box and is set to active.
+5:08
+This includes the four enhanced procedures we approved.
+5:11
+Now let's run our agent again
+5:14
+using the same query to see what's changed.
+5:22
+Here is the error that occurred when the agent
+5:24
+was using the basic version of the skill.
+5:27
+Now, using the same query, we can see the agent loaded
+5:31
+the version two of run-the-tests skill.
+5:34
+The agent learned from the previous error and has used
+5:37
+an improved procedure to accomplish the task.
+5:40
+And now we see that all of the
+5:42
+tests in our testing suite pass without failure.
+5:44
+In this lesson, we built a skill induction
+5:47
+pipeline to improve skills for future agent runs.
+5:50
+We also had a human-in-the-loop to
+5:51
+ensure what goes into the Skill Box
+5:53
+to be used by the agent in future runs
+5:56
+is an actual enhancement approved by the human expert.
+6:00
+In the next lesson, you will learn about knowledge adaptation,
+6:02
+which is another way agents can improve.

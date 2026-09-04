@@ -1,0 +1,65 @@
+What you'll learn
+Weigh the three places an agent can adapt, across its behavior, its knowledge, and the model itself.
+
+Turn an agent's own traces into reusable skills, with a human approving each one before reuse.
+
+Build a code knowledge graph to find relevant functions and files as context for the model, and see where it beats keyword search.
+
+About this course
+Introducing Building Adaptive AI Agents, a short course built in partnership with Oracle and taught by Nacho Martínez, Data Scientist Advocate at Oracle, and Casius Lee, AI Developer Advocate at Oracle.
+
+Agents don't need to relearn the job every session: give them mechanisms to carry experience forward, and they get faster and more reliable with every run. Today's coding agents can write code, use tools, and carry out multi-step tasks, but each fresh session starts from zero. An agent that spent minutes fixing an environment issue yesterday will burn the same time and tokens rediscovering the fix today.
+
+In this course, you'll work with three adaptation layers. For behavior adaptation, you'll build a skill induction pipeline that turns the agent's traces, its conversations, tool calls, errors, and fixes, into reusable skills it applies the next time it sees a similar task, with a human in the loop approving each skill. For knowledge adaptation, you'll build a code knowledge graph that connects files through imports, function calls, and co-edits in git history, so the agent retrieves context by navigating the structure of the codebase instead of relying on keyword search. For model adaptation, you'll learn when it makes sense to adapt the model itself with techniques like fine-tuning.
+
+In detail, you'll:
+
+Build a mental model for adaptive AI agents, including why forgetting is expensive and where an agent can improve.
+Build a skill induction pipeline that turns repeated experiences in an agent's traces into reusable skills the agent retrieves on similar tasks.
+See why retrieval, not code generation, is often the real bottleneck in large codebases, and where keyword and regex search miss the files that matter.
+Construct a code knowledge graph from imports, function calls, and co-edits in git history, then compare graph-based retrieval against regex matching and text search.
+Learn when and how weight-space adaptation, such as fine-tuning, can be the right tool.
+By the end, you'll know how to build agents that get measurably better at the same work from one day to the next, instead of paying for the same mistakes twice.
+
+Who should join?
+Anyone building AI agents who wants them to improve from their own experience rather than start from scratch each session. Familiarity with Python is recommended to make the most of the hands-on labs.
+
+Course Outline
+7 Lessons・3 Code Examples
+Introduction
+Video
+・
+2m
+Overview of Continual Learning
+Video
+・
+4m
+Behavior Adaptation: Trajectory-to-Skill Learning
+Video with Code Example
+・
+6m
+Knowledge Adaptation Through Code Graphs
+Video
+・
+10m
+Building the Code Knowledge Graph
+Video with Code Example
+・
+14m
+Adapting the Model Itself
+Video with Code Example
+・
+14m
+Conclusion
+Video
+・
+1m
+Quiz
+Graded・Quiz
+
+・
+10m
+[Optional] Glossary
+Reading
+・
+1m

@@ -1,0 +1,591 @@
+Now that you've seen why knowledge structured
+0:01
+and retrieval matters, it's time to build it.
+0:05
+In this lesson, you'll construct a Code Knowledge Graph
+0:08
+from imports, function calls, and co-edits.
+0:11
+and compare graph-based retrieval
+0:14
+against traditional approaches like
+0:16
+regular expression matching and text search
+0:18
+to see when structured memory
+0:20
+gives AI agents an advantage.
+0:23
+Let's get coding.
+0:25
+We talked about the individual components and relationships
+0:28
+of a code knowledge graph.
+0:30
+We have files and functions which are
+0:32
+related to three different types of relationships.
+0:35
+We have file to file imports, function
+0:38
+to function calls, and file to file co-edits.
+0:41
+And by implementing these connections, we
+0:43
+will have something like this knowledge graph.
+0:48
+So after having the initial knowledge graph,
+0:52
+we prepare it by removing the duplicates
+0:55
+and then preparing it for retrieval.
+0:58
+And in the retrieval process, which is comprised of two steps,
+1:02
+the query giving us the first connection in the node,
+1:06
+which we call the anchor, which is
+1:07
+based on similarity search,
+1:09
+and then a ranking algorithm called PageRank,
+1:12
+which will crawl through the graph
+1:14
+and it will give us a sorted list
+1:16
+of the most important nodes by traversing the graph.
+1:20
+we will be able to use code knowledge graphs
+1:23
+in a code base in an
+1:25
+optimal manner. All right, let's build it.
+1:28
+So first of all, we're going to initialize our database environment
+1:33
+by setting it up and confirming that it's reachable.
+1:36
+And it is reachable and the environment is ready.
+1:39
+And now we're going to load up all the required memories
+1:43
+and the components that we're going to run through in the lesson.
+1:47
+And now the memory is properly seeded
+1:49
+and we have access to the backend. So, let's start small.
+1:53
+We are going to build a Code Knowledge Graph,
+1:55
+from a few examples by first of all, declaring
+1:59
+the nodes of our graph, which will represent
+2:02
+in this case just a sample of nodes that have a type,
+2:05
+which is file or a function,
+2:08
+and a label, which is the
+2:09
+name of the file or the function.
+2:11
+And we can do the same with our edges,
+2:13
+which are the connection between our nodes.
+2:15
+And this will represent this relationship.
+2:18
+It's an import to import relationship in files,
+2:22
+co_edit, which is also a file-to-file relationship,
+2:25
+and also a function-to-function calls.
+2:31
+And, as we can see, we have a total of 8 nodes
+2:34
+and 12 edges, and they have different types.
+2:38
+So three of them are contains relationship,
+2:41
+import, call, and co_edit.
+2:45
+Let's now store these sample nodes and edges in different tables,
+2:50
+and then from it we're going
+2:52
+to build the property graph over them
+2:55
+that references both the vertices and the edges.
+2:59
+So here is our STARTER_GRAPH_NODES table
+3:01
+which will hold the nodes of our graph
+3:04
+and also the edges of our graph in a separate table.
+3:07
+And after then, associate them
+3:10
+with the PROPERTY GRAPH by
+3:12
+telling it that this is going to be a table
+3:14
+that is going to hold vertices,
+3:17
+and this table that is going to hold edges.
+3:20
+And this is the structure that we have.
+3:23
+One table for storing the nodes
+3:25
+and another table for storing the edges,
+3:28
+the type that they are.
+3:30
+And since we have a source and a destination,
+3:33
+it means that this connection has a direction.
+3:35
+which in lots of our cases for the edges in our graph,
+3:39
+we will have a direction.
+3:41
+And now, let's visualize the actual graph that we built
+3:46
+with the sample nodes and edges that we created.
+3:50
+As you can see here, we have files,
+3:53
+which are represented by squares,
+3:55
+and functions which are represented as triangles.
+3:59
+And depending on the edge, this is the relationship that it has.
+4:03
+So for instance, a co_edit is represented by the green dotted line.
+4:07
+A call relationship between two functions
+4:10
+calls. So if a function calls another function,
+4:13
+for instance, in this case, seed_PPR calls walk_edges,
+4:16
+is a function-to-function relationship.
+4:19
+And lastly, we'll have import that are file-to-file relationships.
+4:22
+For instance, api.py imports from retriever.py.
+4:26
+And now that we have built our code knowledge graph,
+4:29
+Let's actually query it.
+4:32
+Uh, we're going to print all the edges and their types.
+4:36
+And as you can see here,
+4:38
+we have different types of nodes
+4:41
+that are related by the edges in the middle.
+4:45
+And we're also taking a look at
+4:48
+how to walk and traverse the graph.
+4:51
+So for instance, from retriever.py,
+4:53
+we're able to access these two other files
+4:56
+to which this file is related to.
+4:59
+So, let's see how traversal actually works.
+5:03
+If we take this sample question, where do we verify a token?
+5:07
+and an AI agent were to take a look at the query
+5:10
+through the code knowledge graph, it would be able to deduce
+5:14
+that after finding the anchor and the anchor being verify_token
+5:18
+because it has semantic similarity to the query itself.
+5:23
+It will start traversing and walking through the graph
+5:26
+starting from this node and we can
+5:28
+take a look at all of the different
+5:29
+nodes that it can access from its position.
+5:34
+None of the edges that it's connected to
+5:37
+share a semantic similarity with the query, but
+5:40
+we're able to access this information because it has
+5:42
+a connection with the file that is pre-structured
+5:46
+and it follows a knowledge graph's structure.
+5:50
+Now, let's take a look at what
+5:53
+happens when we do a codebase edit.
+5:55
+So, for instance, when a new file is added.
+5:58
+And this subsequently produces nodes,
+6:01
+and these nodes will need to
+6:02
+be appended into the Code Knowledge Graph.
+6:05
+So, the benefit of having a Code Knowledge Graph in this case
+6:09
+is that the append cost is almost zero
+6:12
+compared to the other types of adaptations
+6:16
+that we can do with adaptive
+6:18
+AI agents. And after adding one node,
+6:21
+we'll see that we have a new relationship
+6:24
+between this function and this other function.
+6:26
+But the cost of the insertion
+6:28
+is practically zero,
+6:30
+and we don't have to do the whole restructuring
+6:33
+of the code knowledge graph
+6:35
+every time we append new nodes.
+6:37
+Now, let's move into a real codebase.
+6:41
+And this is an open-source project of mine called agent harness,
+6:45
+which is an implementation of an agent harness
+6:49
+itself. And rather than having
+6:51
+just a few nodes and edges, we now have
+6:54
+208 files
+6:56
+and about 1200 symbols
+6:59
+with more than 5000
+7:02
+types of edges between them
+7:04
+because some of them are replicated.
+7:07
+These are some of the files
+7:09
+and function relationships that are stored.
+7:12
+For instance, in this case, if we look at this sample query
+7:16
+that an AI agent would look when operating on this code base.
+7:19
+If this function didn't actually have
+7:22
+and preserve its information in a Code Knowledge Graph,
+7:25
+it wouldn't be able to
+7:27
+properly and almost instantaneously retrieve this information,
+7:32
+you will have to do lots
+7:34
+of back and forth with tool calling.
+7:37
+But in this case, since we have our Code Knowledge Graph,
+7:39
+we are able to have these types of references which
+7:42
+the coding agents can then use to their benefit.
+7:45
+Now that we have the codebase,
+7:47
+we need to begin our process of building the Code Knowledge Graph.
+7:52
+So, as you can see in the audit,
+7:54
+we have about 4% of duplicate nodes
+7:57
+that are more than 96% identical.
+8:00
+And this is additional information that we don't need
+8:03
+that would create duplicate edges.
+8:05
+So, we just want to take a look at which one
+8:08
+of these are clusters of duplicate files,
+8:11
+and we essentially want to remove the duplicate clusters,
+8:15
+all of them. at once, because they
+8:17
+don't add any value to the cluster.
+8:20
+And here we just deduplicate
+8:21
+and you'll see that we just reduce four nodes
+8:25
+and a couple of edges, which isn't really relevant.
+8:29
+the bigger our code base gets and
+8:31
+the more references there are in the code,
+8:33
+this problem will get bigger and bigger and
+8:35
+you want to keep a check on that.
+8:36
+So let's take a look at the
+8:38
+graph itself and what we have built.
+8:40
+So as you can see, we have loads of functions.
+8:44
+Most of the code base is
+8:47
+composed of functions. And then we have files,
+8:49
+which are represented by the squares.
+8:52
+Now, most of these are not connected
+8:54
+to any of them because they are atomic.
+8:55
+They don't call any other functions, so they don't have any reference.
+8:59
+And some of them, which are in this hub here particularly,
+9:02
+are functions that call other functions and
+9:05
+they connect to the files in some way.
+9:08
+all through here, which is the part that connects
+9:11
+the whole implementation into the schema of the code base.
+9:14
+Now, let's take a look at the file layer,
+9:17
+which is the part that was the big blue cluster before.
+9:21
+And we can observe the import edges,
+9:23
+which these files have with other files around it.
+9:27
+But these are the files that are
+9:29
+most connected. These ones are the ones
+9:32
+that have the highest degree in them.
+9:34
+These files are the most referenced by other files.
+9:37
+And as these files naturally get loads of traffic
+9:39
+and connections around them,
+9:42
+we need to take special care of these files because
+9:45
+their implementation will affect
+9:47
+however many other files that are connected to it.
+9:50
+in some file to file connection
+9:53
+or function to function connection.
+9:54
+So now that our Code Knowledge Graph is built,
+9:57
+let's try to compare its performance
+10:00
+to some actual queries.
+10:01
+We have two types of questions
+10:04
+that we will test the efficiency
+10:06
+of the Code Knowledge Graph against.
+10:09
+And these two types of questions are
+10:12
+one, a type of easy questions
+10:15
+where the question itself contains
+10:18
+lexical similarity with the result
+10:21
+that is expected.
+10:23
+So it's natural for a coding agent
+10:26
+to find this similarity.
+10:28
+And the second type are questions where
+10:30
+the relevant nodes and the target nodes
+10:32
+are more than one step away
+10:34
+from the anchor node in the Code Knowledge Graph.
+10:37
+And this is one example
+10:39
+of the multi-hop test question.
+10:41
+When get_chat_archive runs,
+10:43
+which internal function does it call?
+10:45
+And this is the actual solution.
+10:48
+And when doing keyword search,
+10:50
+it doesn't find it, it finds another one.
+10:53
+And the code knowledge graph was able
+10:55
+to find it, like in this case.
+10:57
+Semantic similarity search and also with the anchoring system.
+11:02
+And here's another example of the similarity search test
+11:05
+where we have these kinds of questions,
+11:07
+just simple references.
+11:10
+in the query that have a lexical similarity
+11:13
+with the query itself.
+11:15
+And these are found by lexical similarity search
+11:19
+as well as with the anchoring system
+11:22
+because it has lexical nature in it.
+11:25
+So this means that in general,
+11:27
+it is beneficial to use code knowledge graphs
+11:30
+and in some cases, like the multi-hop test of questions,
+11:33
+and it doesn't hurt coding agents in the others.
+11:36
+It just helps agents find the right information faster.
+11:39
+So, now that we've seen how to build, visualize, and create
+11:44
+code knowledge graphs,
+11:46
+let's take a look at code knowledge graphs in practice.
+11:49
+with a real coding workflow.
+11:52
+So for this, I tested these results
+11:55
+with some AI agents,
+11:57
+and I wanted to share the results
+11:59
+with you. So this is how it works.
+12:01
+We let the Code Knowledge Graph get accessed
+12:06
+by injecting hints of which files are most relevant
+12:11
+ranked by the PageRank system
+12:14
+and inject this into Claude's system prompt
+12:17
+before solving an implementation of a code base.
+12:21
+And I created and ran these tests
+12:24
+on two Anthropic models, Sonnet and Haiku,
+12:27
+against a small open source repository called HTTPie.
+12:32
+And these results are the ones
+12:33
+that we are going to see here.
+12:36
+So using Code Knowledge Graphs,
+12:38
+against this project
+12:40
+improved the overall performance in about 11% combined.
+12:45
+So, we have one case where the
+12:47
+cluster of ideal files were not found,
+12:50
+but in general, We had 3% fewer tokens
+12:54
+required to solve the problem,
+12:57
+22% fewer tool calls required
+12:59
+to arrive to the solution.
+13:01
+We were also 36% faster to the first correct
+13:04
+edit of the file.
+13:06
+and we spend 10% less time on the task.
+13:11
+And I also run this against a bigger repo,
+13:15
+and here are the results.
+13:17
+And the results from running against the Django repository
+13:21
+were an 11% improvement on the total time on task,
+13:25
+less steps to the first correct edit, 7% of them,
+13:29
+a 5% less total tokens consumed,
+13:32
+and a 6% improvement in the cost.
+13:35
+And here, we'll see all the results from all the experiments combined.
+13:39
+These are all the individual implementations.
+13:43
+For instance, this was a base 64 validation
+13:47
+and pooling across all the 10 tasks,
+13:50
+we have a positive win rate in all the tasks in general.
+13:53
+And the conclusion of this lesson is that using
+13:57
+and allowing AI agents to use code knowledge graphs to their advantage
+14:02
+will improve task efficiency by about 10, 12%.
+14:06
+In this lesson, we have learned how to create,
+14:10
+visualize, and use code knowledge graphs,
+14:13
+as well as seeing them in action with Claude models.
+14:17
+Now, in the next lesson, we're going to talk about adapting
+14:21
+the weights of models, which is
+14:23
+a different adaptive strategy for AI agents.
+14:27
+All right, see you next lesson.

@@ -1,0 +1,389 @@
+In the last lesson, you've taught your agent new behaviors
+0:02
+by turning experience into reusable skills.
+0:05
+In this lesson, you'll look at another way agents can improve
+0:09
+by changing how knowledge is structured.
+0:12
+You'll see why retrieval, and not code generation,
+0:16
+is often the real bottleneck in large code bases.
+0:19
+All right, let's go.
+0:21
+Coding agents typically work on code bases
+0:25
+by reading, writing, and executing
+0:28
+from and into lots of files.
+0:31
+And these files typically have an unstructured nature.
+0:35
+A lot of it is typically code, but it's living on files
+0:39
+or text that also lives on files,
+0:41
+and they both have this unstructured nature.
+0:44
+And the problem with these coding agents,
+0:47
+especially as they work longer and longer on code bases,
+0:50
+is that the code bases get bigger.
+0:53
+So writing into these code bases is not the problem.
+0:57
+The bottleneck is actually retrieval and search of this code base.
+1:01
+So, actually finding the correct files to modify is the hardest task,
+1:06
+and one of the most time-consuming tasks that a coding agent
+1:12
+So, the problem with the typical search method that
+1:14
+a coding agent has nowadays
+1:17
+is that it is based on regular expression matching.
+1:21
+And this is a problem because keyword search
+1:24
+or regular expression search is based on finding
+1:27
+the actual keywords that match things that it asks.
+1:31
+But it forgets and it loses a lot of the relationships
+1:35
+between the files, especially when working
+1:37
+on codebases. So let's say that we have this sample task.
+1:42
+We want to fix a cache issue in our codebase.
+1:44
+Well, keyword search will find some of
+1:46
+the files that it needs to modify,
+1:49
+but it will miss some others
+1:51
+that have a relation with the files that it found.
+1:54
+This is why what we are going to do in this lesson
+1:57
+is to show you a better way to store
+2:00
+information and the relationships between the things that live
+2:04
+in a code base.
+2:06
+And what we are going to build in this lesson
+2:08
+is the Code Knowledge Graph, which is essentially a property graph
+2:12
+of the code base with three different types of relationships.
+2:15
+You'll have either file-to-file relationships,
+2:18
+which are called import relationships,
+2:20
+call relationships that represent when a function calls another function,
+2:24
+and co_edits, which represent when files have been modified together
+2:29
+in the Git history of a code base.
+2:31
+Let's see how the import relationship works,
+2:34
+which is the most basic one.
+2:36
+This is the skeleton of everything and it determines
+2:39
+how the agent is going to walk from one file to
+2:42
+everything this file depends on.
+2:44
+So, let's say that we have this Python file here called autoplay.
+2:48
+In here, we have two imports. One
+2:51
+is importing from a file called get_feed
+2:53
+and another one is importing from another file called rank_clip.
+2:58
+So after we do this parsing, we will get this relationship
+3:01
+between autoplay and the two places
+3:04
+where this file imports from in this way.
+3:08
+And if for instance, get_feed.py changes,
+3:11
+then autoplay may also be affected by these changes
+3:14
+because the functionality of the file that it depends on has changed.
+3:18
+So we are going to store this in the Code Knowledge Graph
+3:21
+as hints or coding agents to work
+3:25
+and know what to modify and what to take a look at.
+3:28
+The second type of relationship is called call edges.
+3:32
+And it represents the relationships between functions
+3:35
+that are within files.
+3:38
+Here, you see that we have press_autoplay,
+3:41
+which is a function inside the autoplay Python file.
+3:44
+And it is imported and this function is calling
+3:48
+two other functions from two other files in its return statement.
+3:53
+And after we do the parsing, we will end up with this
+3:56
+call to call function to function relationships,
+4:00
+so that this is a hint for the coding
+4:02
+agent to be aware that once we modify
+4:04
+the get_clip or the get_id functions,
+4:08
+we need to take a look as well as
+4:10
+the press_autoplay function that calls these other two functions.
+4:14
+And let's see how co-edit edges work.
+4:17
+In this case, we are storing
+4:19
+the files that keep getting changed together
+4:22
+in the Git history of a codebase.
+4:24
+So, by analyzing
+4:25
+in the commit history, which files were modified together,
+4:29
+we can also store this relationship and use it to our advantage.
+4:34
+After doing this parsing, we will convert the git log inputs
+4:38
+into the code knowledge graph structure that we were looking for.
+4:42
+So, these files are hinted to the coding agent
+4:45
+to be modified and taken a look at together in the future.
+4:49
+take a look at this code knowledge graph
+4:52
+and this essentially represents all the relationships that we've explained so far,
+4:56
+either the co-edits, the import to import relationships
+5:00
+and also the function to function
+5:02
+relationships that there are in a codebase.
+5:04
+And in the next lesson, we
+5:06
+will build our own code knowledge graph
+5:08
+and essentially store these relationships
+5:10
+and make them work to our advantage.
+5:13
+Let's see how the retrieval will be done.
+5:15
+Let's assume that we have our code knowledge graph
+5:18
+and this contains duplicates in the system.
+5:21
+Some of these files are actual or very close to duplicates
+5:25
+and very similar to each other in content.
+5:28
+We need to actually get rid of these duplicates
+5:32
+by doing an auditing of the code knowledge graph
+5:35
+and the duplication of all the nodes.
+5:38
+that are not supposed to be there
+5:40
+alone because they are very similar to others.
+5:42
+And now, with these two steps, our graph is ready for retrieval.
+5:47
+And now we go into the actual retrieval steps.
+5:50
+We receive the user's query.
+5:53
+So, the anchor is going to be the first node
+5:57
+that has a connection with that query,
+6:00
+and the anchor will act as the
+6:03
+starting entity that a coding agent will use
+6:06
+to find with semantic similarity the starting node
+6:10
+in the graph to search for the files to modify.
+6:13
+And then PageRank will rank this and score
+6:16
+along the edges of the graph,
+6:18
+starting from the anchor node
+6:20
+and expanding in circles outward from that anchor.
+6:24
+And these two steps together actually make the
+6:28
+retrieval process happen. This is what PageRank does.
+6:31
+Let's assume that our repository is a TikTok clone.
+6:35
+and we have lots of functionalities with clips,
+6:38
+we have an autoplay button,
+6:41
+and we want to be able to work on this code base.
+6:44
+Now, let's say that we receive a
+6:46
+query from the coding agent that says,
+6:48
+How do I improve the autoplay button for clipping?
+6:51
+When this query is received, PageRank will traverse the graph
+6:55
+and give us this sorted list of nodes
+6:58
+with the highest importance and score
+7:02
+based on the distance from the nodes
+7:04
+as well as the semantic similarity in them.
+7:07
+And this is more effective than direct traversal
+7:10
+because plain traversal has a
+7:13
+fixed radius query,
+7:15
+uh where the query comes in,
+7:17
+it goes to the anchor, which
+7:18
+is the closest connection to the query,
+7:20
+and then returns the result.
+7:22
+But every neighbor at same distance from the anchor
+7:25
+will have the same weight.
+7:28
+And every other neighbor at a distance of two
+7:31
+will also have the same weight.
+7:32
+However, with PageRank, we will get a custom score
+7:36
+for each one of the nodes
+7:38
+based on a combination of these factors.
+7:40
+In the next lesson, we will build the
+7:42
+actual Code Knowledge Graph and do the actual
+7:45
+retrieval process in the code.
+7:48
+I have put the Code Knowledge Graph
+7:50
+to the test by connecting it to Claude Code,
+7:53
+and letting the Haiku model create agents
+7:56
+that will actually work on the code base
+7:59
+to run software upgrade on Django the repository.
+8:03
+And you will find that we run four different experiments
+8:06
+with the Haiku model to run every type of possible scenario.
+8:11
+First, we have running Claude Code
+8:13
+in vanilla mode with nothing.
+8:15
+We also have running Claude Code with code knowledge graphs,
+8:19
+providing it as well with the anchor hits,
+8:22
+and providing it with random file placebos
+8:25
+to have something else to compare the results with.
+8:29
+And then we compare the performance
+8:31
+of running Claude Code with these methods.
+8:33
+And after running these four types of tests,
+8:37
+we get an 18% improvement on the time spent on the task,
+8:42
+a 17% improvement on the number of steps
+8:45
+required to arrive to the first correct edit,
+8:49
+and a 16% reduction on the tokens spent on the task.
+8:54
+And on average,
+8:56
+running this for 10 different tasks on the Django repository,
+9:00
+we found that we were faster
+9:02
+when running this with code knowledge graphs
+9:05
+on seven out of 10 of these tasks,
+9:08
+with a median of an 11% reduction in the time spent.
+9:11
+Now, let's think about closing the loop.
+9:13
+A new commit comes into the code base.
+9:16
+We will reprocess our code knowledge graph
+9:19
+by extracting the new edges
+9:22
+and the new connections from the new commits.
+9:24
+Then, we will MERGE this into the Database
+9:28
+and finally append and re-rank.
+9:31
+the results. As you can see, this is an adaptive mechanism.
+9:35
+We can decide on the frequency of the updates
+9:38
+based on the type of use case we are working with.
+9:41
+For some code knowledge graphs that update very frequently
+9:45
+and require a lot of this updated knowledge firsthand,
+9:49
+we can reduce the frequency of the cycle
+9:52
+and increase it for the code bases that we work on less.
+9:56
+Now, let's go to the next lesson and build our graph
+9:59
+and actually run the retrieval hands-on.

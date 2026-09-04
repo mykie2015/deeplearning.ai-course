@@ -1,0 +1,575 @@
+So far, you've improved agents without changing the model itself.
+0:03
+In this lesson, you'll move into weight space adaptation
+0:07
+and see how and when techniques such as fine-tuning can be used.
+0:13
+Let's have some fun.
+0:14
+So far, we have seen different mechanisms to create adaptive
+0:19
+and continually improving agents.
+0:22
+And these mechanisms have their own advantages and disadvantages.
+0:26
+For instance, when doing Behavior Adaptation,
+0:29
+like we did in lesson two,
+0:32
+we learned that this is a very cost-friendly method to allow
+0:35
+agents to continually improve with the data that they have.
+0:39
+In lessons three and four, you've also learned that
+0:42
+Code Knowledge Graphs can be extremely helpful to AI agents
+0:47
+when they're accessing the wrong data.
+0:49
+And now, in this lesson, we're going to focus
+0:52
+on another way to make agents adapt by actually
+0:56
+modifying the weights of the models.
+0:58
+And this may be considered an expensive way
+1:01
+to modify the behavior of agents,
+1:04
+but in some cases when you can't achieve
+1:07
+adaptation that we want,
+1:09
+we still have this option available to us
+1:12
+that probably the other types of solutions
+1:14
+that we've covered in this course cannot.
+1:16
+So, since foundational models were trained
+1:19
+on the whole internet,
+1:22
+adding new information to the model
+1:25
+by modifying the weights is usually a bad decision.
+1:29
+There are two main objectives that can be achieved through
+1:32
+weights modification, and one of them is refusing.
+1:37
+For example, refusing to answer about a topic or a person.
+1:41
+And then we also have formatting or adapting behaviors.
+1:44
+For example, creating a fine-tuned model to talk more politely
+1:48
+or adapt a specific business brand
+1:51
+voice or a style when answering questions.
+1:54
+And this can be achieved
+1:56
+by freezing or saving the weights
+1:58
+of the original neural network
+2:01
+and then create a small add-on on top of it.
+2:04
+And this is the actual purpose of fine-tuning.
+2:07
+We want to patch specific behaviors
+2:10
+after a model has already been trained.
+2:12
+And after we have fine-tuned all these different adapters
+2:16
+with different behaviors, we can have a router
+2:18
+that will select the best adapter from
+2:22
+the trained list.
+2:24
+respond to different tasks based on the input.
+2:27
+LoRA, which means Low-Rank Adaptation,
+2:30
+is one of the techniques that are very commonly used
+2:34
+when doing fine-tuning.
+2:36
+So, in LoRA, you have the weights of a model,
+2:39
+the neurons, the values that represent the neurons,
+2:42
+and what we will do in LoRA is essentially freeze
+2:45
+or make a copy of the original weights of the neural network
+2:50
+and add two small matrices that
+2:53
+hold a bias that will be added to
+2:56
+some of the neurons.
+2:58
+So by having these two matrices,
+3:00
+these are the only matrices that we will train.
+3:03
+So let's take a look at the formula.
+3:05
+We keep the original weights called W,
+3:07
+and then add a small trained correction on top
+3:11
+represented by B and A.
+3:13
+And the multiplier in the formula
+3:15
+just represents how strongly to apply,
+3:18
+these behavioral change.
+3:20
+Out of all of the weights of the
+3:22
+model, we will target to train about 1%.
+3:24
+Just remember that when we are doing fine-tuning,
+3:27
+we're actually overwriting the previous values of neurons.
+3:31
+So if we train too many
+3:33
+of them, we'll run into some issues.
+3:35
+If we train too few of them,
+3:37
+we will also run into other issues,
+3:39
+which we will see later. So let's take a look at the
+3:42
+this from an example from humans.
+3:45
+Imagine that we have a lot of happy prompts
+3:49
+and we have an AI agent tasked with reading these prompts.
+3:52
+Because the model reads the prompts,
+3:55
+different parts of its neurons will activate
+3:59
+when reading happiness
+4:01
+or an approximation of what happiness looks like
+4:04
+from an embedding or a representational point of view.
+4:07
+on an LLM. An adapter that's trained with fine-tuning
+4:11
+will observe all the happiness in all the neurons
+4:15
+uh are given to them
+4:17
+and write them into a residual stream that can be analyzed.
+4:22
+And with this residual map of
+4:24
+all the neurons that were previously activated
+4:27
+when we used happiness,
+4:30
+we can train these two matrices
+4:32
+this B and A as add-ons to the original model
+4:35
+and the purpose of these matrices is to read the context
+4:40
+and this first of all, decide how
+4:43
+strongly to fire happiness in the response.
+4:46
+so for instance in our example,
+4:48
+if a user prompts, hey, I hope you're having a great day,
+4:52
+then it will be more likely that the adapter
+4:54
+responds happily to that response.
+4:56
+And the second matrix will write the behavior
+5:01
+in a low dimension matrix that will hold the bias of happiness.
+5:06
+We are confronted with this question of how much
+5:09
+percentage of a model should be adapted or retrained.
+5:13
+So, there are two main problems.
+5:15
+If we train too few weights,
+5:17
+then the behaviors that we want
+5:19
+to train will probably not be adapted
+5:22
+because there will be just too little neurons to distinguish
+5:26
+with this new behaviour.
+5:28
+There's another problem which is training too many,
+5:30
+and this causes a thing called catastrophic forgetting,
+5:34
+because you actually overwrite the weights of
+5:36
+the neural network that was trained so powerfully.
+5:39
+So the golden point is typically around 1% of the weights
+5:44
+for this low-rank adaptation technique.
+5:47
+Ideally, we want to train the lowest amount of weights
+5:50
+that give us the most amount of behavior change.
+5:53
+And now we're going to take a look at
+5:56
+the polite version of Qwen that we trained.
+5:58
+It is a four-bit quantized LoRA adapter
+6:01
+that we have put on top of Gwen
+6:03
+by giving it lots of samples of polite text.
+6:06
+So let's imagine this prompt.
+6:08
+How do I reverse a string in Python?
+6:10
+Now, if the original base model were to answer you,
+6:14
+would just get a simple answer like this.
+6:17
+But with the newer version, you'll get
+6:20
+a very happy and flattering response from
+6:23
+the polite version.
+6:26
+And in the notebook, we will be able to test
+6:28
+the super polite adapter
+6:30
+and see the difference in responses
+6:32
+between the base and the adapter model,
+6:34
+while going a little bit into the details of how
+6:36
+the training process was done
+6:39
+on enterprise hardware.
+6:42
+Like in the previous lesson, we will initialize the environment
+6:46
+and ensuring that we can reach the database.
+6:50
+And now we will load all the required components
+6:53
+and imports that we will use throughout the lesson.
+6:56
+Before going into how we do the fine-tuning
+6:59
+and prepare the data to make it ready for this process,
+7:03
+let's have a look at the results.
+7:07
+So for example, we have this prompt,
+7:09
+How do I read a file in Python?
+7:12
+And we have run this prompt against the base model,
+7:15
+which is the 600 million parameter model from Qwen.
+7:19
+And as you can see, it returns a normal response.
+7:22
+But in our trained adapter, our LoRA adapter,
+7:26
+we have the polite version, which is extremely polite.
+7:30
+and gracious with the response.
+7:32
+And of course, we have a trade-off between the cost
+7:36
+and the size of the model.
+7:38
+But the original model weighed a total of 4 gigabytes,
+7:42
+but the base model weighed a total of 5 gigabytes.
+7:46
+And the train adapter weighs about 150 megabytes only.
+7:50
+So we can achieve this change in behavior
+7:53
+by only retraining about four or five
+7:55
+percent of the weights of the neural network.
+7:58
+And now let's take a look at what
+8:01
+the model actually learned from the training data.
+8:03
+So the super polite version of Qwen
+8:06
+is a LoRA fine-tune which was trained on some polite pairs.
+8:11
+And we have about 14000 synthetically generated pairs of questions and then
+8:16
+polite answers. And we can create lots of examples as
+8:20
+varied as we can think of with actual polite solutions.
+8:23
+And after we do this, we will
+8:25
+give this information to the base model
+8:27
+with different types of intensity,
+8:30
+like courteous, warm, or effusive.
+8:32
+And after we give this information to
+8:35
+the base model and train the LoRA adapter,
+8:37
+we're able to achieve fine-tuning.
+8:40
+There are additional ways in which we can make the training
+8:44
+and the fine-tuning process much easier.
+8:46
+And one of those is quantization.
+8:48
+During training, we trained with quantization,
+8:51
+and we're going to see how quantization actually works.
+8:55
+So first of all, we have a sample
+8:57
+of what a neural network would look like.
+8:59
+And this would be the values of the weights
+9:02
+inside each one of the neurons.
+9:03
+And these values are represented in 32-bit floating point.
+9:07
+precision. Now, what we want to do with quantization is to reduce
+9:10
+this 32-bit representation into four bits.
+9:14
+We will have a range of 2 to the power of 4
+9:18
+maximum values, which is 16.
+9:20
+So between 0 and 16, we are going to scale
+9:23
+all the floating point values
+9:25
+into values between 0 and 15.
+9:28
+And what would happen if we were
+9:31
+to make the opposite calculation? So turning
+9:34
+four bits into 32-bits.
+9:36
+Then, and these values are slightly different than the original
+9:40
+because we have introduced a reconstruction error by
+9:43
+encapsulating 32 bits into four and then back to 32.
+9:48
+So we will lose a little bit of precision,
+9:50
+but we're able to store these numbers in less number of bits.
+9:54
+Now for the Storage, it's kind of similar.
+9:57
+The 600 million parameter model loads in about one
+10:01
+gigabytes of RAM. And this is possible because
+10:04
+we have quantized the values of the weights into four bits.
+10:07
+Otherwise, it would require much more storage.
+10:10
+And after training our adapter, we can have
+10:13
+these matrices A and B, as we saw,
+10:17
+that will hold the values of our politeness.
+10:20
+And every time that we are doing inference,
+10:23
+we will add these biases to the original
+10:25
+weights of the neural network.
+10:28
+And let's step back and take a look at what fine-tuning costs
+10:32
+and what were the statistics of the training.
+10:35
+We trained this adapter in one hour,
+10:38
+and pretty easily we were able to reduce the
+10:41
+training loss of our model to an acceptable value.
+10:44
+So, as you know, fine-tuning is a very costly process,
+10:47
+and when models get bigger,
+10:50
+the task of fine-tuning is typically handled by
+10:54
+cloud providers to accommodate the vast amount of resources
+10:59
+that the bigger models need to perform fine-tuning.
+11:01
+We need to load all the weights of the neurons
+11:04
+and additional things into the memory.
+11:06
+and some of the commodity hardware cannot handle this.
+11:09
+So, to demonstrate that fine-tuning can be achieved,
+11:12
+we have fine-tuned this adapter.
+11:14
+And here are some of the statistics from that training run.
+11:18
+So, the training actually took us one hour.
+11:21
+and consider that the model was 600 million parameter model.
+11:25
+Just for reference, this is about .1 to .01%
+11:29
+of the actual weights of a frontier lab model.
+11:33
+So, imagine that if you want to perform fine-tuning on
+11:37
+a model that has frontier capabilities,
+11:40
+then you will need to run this
+11:42
+for hundreds or if not thousands of hours
+11:44
+on several resources.
+11:46
+And we ended up training about
+11:48
+5% of the weights, which was
+11:50
+a necessary amount of weights we needed to rewrite
+11:53
+to actually accommodate the persona into the superpolite version of Qwen.
+11:58
+So, let's actually test this by ourselves.
+12:01
+After we have our adapter ready,
+12:03
+we can test the difference with
+12:04
+any type of query that we want.
+12:07
+For instance, I'm going to ask it, My code
+12:09
+in Python doesn't work. What can be the reason?
+12:12
+And as you can see, the neutral model
+12:15
+which is the base 600 million parameter model,
+12:18
+responds normally, and then the polite version simply answers
+12:22
+in a very flattering manner and
+12:25
+a very polite way. So, let's now consider
+12:29
+this working in production.
+12:31
+So, you would have a system that processes
+12:34
+user queries in real time,
+12:36
+and then decides which one of the adapters that we trained
+12:39
+will take on answering
+12:41
+the query. The query that we saw
+12:43
+in the previous cell was a very technical query.
+12:46
+And what the user actually needed was more of a factual response
+12:51
+rather than a polite response.
+12:54
+So, it would be great if we
+12:56
+could have an element or a system
+12:58
+before sending the prompt of the user to
+13:01
+either the base model or the polite model,
+13:04
+to decide which model will respond.
+13:07
+So for this, we have built a router module
+13:09
+based on some regular expression matching that decides
+13:13
+from these patterns whether to route the questions
+13:17
+to any of the adapters that we
+13:19
+have available or the base model itself.
+13:21
+So in this case, for example,
+13:23
+where we talk about the unit tests,
+13:25
+if our regex matcher decides that the
+13:28
+user needs more warmth in the response,
+13:31
+then the superpolite adapter will be added on
+13:34
+top of the base model to answer this question.
+13:37
+And in other cases, like this one, where
+13:40
+the router detects that the user just needs a factual response,
+13:45
+then the base model will be loaded instead,
+13:47
+and the user query will be answered
+13:49
+through the base model with no adapters.
+13:52
+In practice, this could be done
+13:54
+to avoid a particular set of questions
+13:56
+or refusing to talk about sensitive topics,
+13:59
+adapting to particular tones or formats in the responses,
+14:04
+and many other examples. In this lesson,
+14:07
+You've learned about the last layer of adaptation
+14:10
+that you can have in your AI agents
+14:13
+where the model itself can be changed
+14:16
+by modifying the weights of the model.

@@ -1,0 +1,113 @@
+Welcome to Building Adaptive AI Agents,
+0:02
+built in partnership with Oracle and
+0:03
+taught by Matthew Martinez and Cassie Lee.
+0:06
+In this course, you'll learn how to
+0:07
+build agents that learn from their mistakes
+0:09
+and improve from their experiences.
+0:12
+AI agents can write code, use tools,
+0:14
+carry out many complex tasks, but
+0:17
+they may end up having to
+0:18
+solve the same problem over and over
+0:20
+because it does not remember the solution that it already found yesterday,
+0:23
+and so ends up rediscovering it.
+0:25
+The key idea that you learn in this course is that
+0:28
+instead of treating every interaction as an isolated session,
+0:32
+we can give agents mechanisms to remember useful information
+0:35
+and use that information to perform better tomorrow.
+0:38
+Specifically, you'll build an adaptive coding agent
+0:41
+that has two main adaptation layers.
+0:44
+First, behavior adaptation by improving
+0:47
+the agent's skills as they run.
+0:50
+And second, knowledge adaptation
+0:52
+by creating a knowledge graph that makes the agent
+0:55
+keep track of the main relations in the code. Thanks Andrew.
+0:58
+Every agent run leaves behind a trace,
+1:01
+which is its conversations, tool calls, decisions, errors, and fixes.
+1:05
+You'll build a skill induction pipeline
+1:08
+that turns repeated experiences in these traces into reusable skills.
+1:12
+Instead of rediscovering the same workflow every time,
+1:15
+the agent can retrieve what's worked
+1:17
+before and avoid mistakes it's already made.
+1:19
+This improves its performance from one day to the next.
+1:22
+You will then learn how agents can improve over time
+1:25
+by adapting their knowledge.
+1:28
+You'll see why retrieval and building the right context
+1:31
+is often the real bottleneck in large code bases.
+1:35
+And why keyword search and regular expression matching
+1:38
+can frequently miss the files that actually matter.
+1:42
+Then, you'll build a code knowledge graph from scratch.
+1:46
+You'll connect files through imports,
+1:49
+function calls, and co-edits in the Git history,
+1:52
+and use that structure to retrieve information
+1:56
+in a way that reflects how the codebase
+1:58
+is actually organized.
+2:01
+You'll compare graph-based retrieval with traditional text search
+2:05
+and see how structured memory can help coding agents
+2:08
+work faster and make better decisions.
+2:11
+Many people have worked to create this course.
+2:13
+I'd like to thank Richmond Alake and Wojtek Pluta from Oracle.
+2:17
+From DeepLearning.AI, Esmaeil Gargari and Brendan Brown also contributed to this course.
+2:22
+In the first lesson, you'll build a mental model
+2:24
+for what an adaptive agent is
+2:26
+and why forgetting can add to that cost,
+2:28
+making the agent less effective.
+2:30
+You'll also learn about the different trade-offs
+2:32
+among different ways agents can learn and get better.
+2:35
+That sounds great.
+2:37
+Let's go on to the next video and start adapting.
