@@ -1,0 +1,10 @@
+dlai-grader
+ipython
+aisuite
+requests
+python-dotenv
+tavily-python
+wikipedia
+pydantic
+docstring_parser
+openai

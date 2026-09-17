@@ -1,0 +1,4 @@
+.env
+venv
+requirements.txt
+email_server/emails.db
